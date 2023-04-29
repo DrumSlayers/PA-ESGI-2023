@@ -1,0 +1,32 @@
+aws_region               = "us-east-1" #us-east-1
+aws_access_key           = "ASIAUKLF6BJNQJAK2YOG"
+aws_secret_key           = "jtx0o3F3dk3o72TWGWrnBDKEakvql015QcWaJcfc"
+aws_token_session        = "FwoGZXIvYXdzEB4aDHbArDQ9uoIYHqhtCSK+ASqPWNzk0SeiZAA3PcIyrmnR0S71of3QeQ3H5mDx4IGkBSYWNz2zv9xoe5RQy2O4rUlP866wRMYx4jm2G+ym4J0POB51u7XfPolNaYBnwXIRRha4UpoCNo5CrXC8qHIqwTXWksgNm5u/+a6UcmLXSKsmHxoqoy/hXOpykeN4B27KSlvKZuBf1lB5r9UMsyK89kLcNXmKILBLU5H0Sib/W8EXFAu+IMqU/udlZyFzJK8NbCahUpqcD+iNgX/s29oov+mkngYyLclSD/db+pMVVQQWPLsoNtmDONc6q+NDsH5Y7Wg2H31DlvvcPCYpGq09PbXNwQ=="
+ssh_key_name             = "Cle-perso"
+public_ssh_key           = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDdB210H4m3eCZGDrAOMYC54nQB25Jnn4JmeWG8iD2/dc4p+OeCMOUOb83W6t7E2aeGIe2wEVGBoThxQgefJVzQrW9Idzc5vhWKCQl9MB4gJwZ1LJ+1LabNWCmrhTiuqkE9VYsH7pNvR539DGMtQWy4kFyFSrMk+Z3mqvUe64/J0XsdB61b5Skkwc6HuV5erANZh1uyNRUDVpVuDqltgZLEj7MCRG/nur3pCp9WMQgg0/QhkHKlr5gj8IQJocL1LmjnAjnLJuYfxkVYSzHAu4ODZdZ6CGnDj/gmEGL4+3VKHsoVgjRP7ccxROIzGNx3D4c1JcKjyhV0+A3hVj2pmIAk1VGgBNBFL8LXITlGxE9AieCOZ8h1D0ERr1EtFYc3d5vjpIzfCyurjZywiZ5+TuVKn7EcflJQQKTH2b/+bAjbKCnWgoFZiXd752BFXqhU2yNwpR+Y3sMGNYP1PypjQnRivOXGxoqDh/zxhKezxnLppX+l2poAldXPuDK4QXt6XTAzADgIryXeMMV2ZLBAkINBGRgzHBerXwkNX2FubXhROmYx4JjEUyA+w3BEJ45rBwdN9XKCnoFb95F2CkXmto7I5Wnke68wC9NGiIumOWWnq/VNIebGcAR5dJTn+BxYsCOziNvDjTfkcv8xq8K3kSMHXlpQuaQg6lcH1wVWkmizPw== Pierre SARRET <drumslayer@drumslayer.ovh> - SSH Key"
+sg_egress_protocol       = "-1"
+from_port_ingress        = "22"
+to_port_ingress          = "22"
+protocol_ingress         = "tcp"
+cidr_blocks_ingress      = ["0.0.0.0/0"]
+ipv6_cidr_blocks_ingress = []
+prefix_list_ids_ingress  = []
+security_groups_ingress  = []
+self_ingress             = false
+from_port_egress         = "0"
+to_port_egress           = "0"
+cidr_blocks_egress       = ["0.0.0.0/0"]
+self_egress              = false
+ipv6_cidr_blocks_egress  = []
+prefix_list_ids_egress   = []
+security_groups_egress   = []
+sg_name                  = "security-group-pa-1"
+ami_id                   = "ami-0574da719dca65348"
+ec2_instance_type        = "t2.medium"
+ec2_name                 = "test-vm"
+bucket_name              = "pa-esgi-2023-b1"
+ip_esgi                  = "45.147.208.196/32"
+mount_point              = "/mnt/bucket"
+vpc_cidr_block           = "10.7.0.0/16"
+vpc_subnet_cidr_block    = "10.7.1.0/24"
+vpc_instance_tenancy     = "default"
