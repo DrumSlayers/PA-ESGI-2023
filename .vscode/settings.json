@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/inventory.json": "file:///home/drumslayer/git/PA-ESGI-2023/ansible/aws_ec2.yml"
+    }
+}

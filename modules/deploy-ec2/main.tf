@@ -72,9 +72,9 @@ resource "aws_security_group" "public-sg" {
 
 }
 
-# EC2 Deploy
+# EC2 3CX Deploy
 
-resource "aws_key_pair" "myssh-key" {
+resource "aws_key_pair" "ssh-key" {
 
   key_name   = var.ssh_key_name
   public_key = var.public_ssh_key
@@ -83,7 +83,7 @@ resource "aws_key_pair" "myssh-key" {
 resource "aws_instance" "myec2" {
   ami                         = var.ami_id
   instance_type               = var.ec2_instance_type
-  key_name                    = aws_key_pair.myssh-key.key_name
+  key_name                    = aws_key_pair.ssh-key.key_name
   subnet_id                   = aws_subnet.subnet.id
   vpc_security_group_ids      = [aws_security_group.public-sg.id]
   associate_public_ip_address = true
@@ -94,9 +94,9 @@ sudo apt-get install awscli -y
 sudo apt-get install s3fs -y
 sudo apt-get install pydf -y
 
-aws configure set aws_access_key_id  ${var.aws_access_key}
-aws configure set aws_secret_access_key ${var.aws_secret_key}
-aws configure set aws_session_token ${var.aws_token_session}
+aws configure set aws_access_key_id_id  ${var.aws_access_key_id}
+aws configure set aws_secret_access_key ${var.aws_secret_access_key}
+aws configure set aws_session_token ${var.aws_session_token}
 aws configure set default.region ${var.aws_region}
 
 # simple user

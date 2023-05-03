@@ -24,6 +24,9 @@ Il souhaite également une documentation du projet complète et qualitative, afi
 3. Lancez le LAB
 4. Récupérez les informations AWS (tokens & co) et éditer terraform.tfvars avec celles-ci
 
+## Déploiement
+1. `terraform init`
+2. `terraform plan / deploy`
 
 # A faire
 Voir discord channel #tache-a-faire

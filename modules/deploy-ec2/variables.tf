@@ -6,21 +6,21 @@ variable "aws_region" {
 
 }
 
-variable "aws_access_key" {
+variable "aws_access_key_id" {
 
   description = "AWS Access key for account"
   type        = string
 
 }
 
-variable "aws_secret_key" {
+variable "aws_secret_access_key" {
 
   description = "AWS Secret key for account"
   type        = string
 
 }
 
-variable "aws_token_session" {
+variable "aws_session_token" {
 
   description = "AWS Session Token"
   type        = string

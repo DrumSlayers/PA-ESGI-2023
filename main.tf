@@ -1,9 +1,9 @@
 #Déclaration du module deploy-s3 avec ces variables
 module "deploy-s3" {
   source                   = "./modules/deploy-s3"
-  aws_token_session        = var.aws_token_session
-  aws_secret_key           = var.aws_secret_key
-  aws_access_key           = var.aws_access_key 
+  aws_session_token        = var.aws_session_token
+  aws_secret_access_key           = var.aws_secret_access_key
+  aws_access_key_id           = var.aws_access_key_id 
   bucket_name              = var.bucket_name
   ec2-public-ip            = module.deploy-ec2.public-ip
 }
@@ -35,9 +35,9 @@ module "deploy-ec2" {
   ami_id                   = var.ami_id
   ec2_instance_type        = var.ec2_instance_type
   ec2_name                 = var.ec2_name
-  aws_token_session        = var.aws_token_session
-  aws_secret_key           = var.aws_secret_key
-  aws_access_key           = var.aws_access_key 
+  aws_session_token        = var.aws_session_token
+  aws_secret_access_key           = var.aws_secret_access_key
+  aws_access_key_id           = var.aws_access_key_id 
   bucket_name              = var.bucket_name
   mount_point              = var.mount_point
   vpc_cidr_block           = var.vpc_cidr_block

@@ -1,0 +1,12 @@
+---
+plugin: amazon.aws.aws_ec2
+regions:
+  - us-east-1
+aws_access_key: ASIAUKLF6BJNYZL5JQZ7
+aws_secret_key: tPPy3aDD1euVknm7nypII5bG/loOlGWqiYg68AM9
+aws_security_token: FwoGZXIvYXdzEOf//////////wEaDFBje2oDDdZNwlCTsyK+AYBLRyTVZDhi7VRluVT7F2BRcfZMgVfJrGuOALKzceIsRWrcETK2vRKXl8PYmTuXgwrVxbcQ+3bTEHV6MUln9FU7wWh6bpBUEX6liio334E5UkP7rynwH8mXfN4LfG/+kJ0kvQZ80JAe5EpFUzh8aVioa4oeuN1S3ciRlkCJWBV9lH6GVPuKDyYOn/Y3/06NSnVulr1IpvrotBt0Lzwo0gs4caqfhGC2S1xcSabC5i+3RiZeW9by7VhN/cvQBgwogp3LogYyLfMMUuSudPNpX4C53d6tmUO98Wiwg1CwGVu1GqXDjm2TCMvQN/KdSnMoMo9LAA==
+compose:
+  ansible_host: private_dns_name
+keyed_groups:
+  - key: tags
+    prefix: tag
