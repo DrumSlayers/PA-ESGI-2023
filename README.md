@@ -37,7 +37,7 @@ ansible-galaxy collection install amazon.aws
 ## AWS Canvas Learner Lab Token scrapping
 The AWS Student Learner Lab is giving new access tokens every 4 hours and at every lab start, so we need to scrap the token from the lab page automatically to prevent copying the values each time (very time consumming)
 
-We are using Selenium with Chrimium webdriver & BeautifulSoup python module for the web scrapping.
+We are using Selenium with Chromium webdriver & BeautifulSoup python module for the web scrapping.
 
 ```python3 scrape_aws_credentials.py```
 
