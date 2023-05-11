@@ -44,3 +44,14 @@ module "deploy-ec2" {
   vpc_instance_tenancy     = var.vpc_instance_tenancy
   vpc_subnet_cidr_block    = var.vpc_subnet_cidr_block
 }
+
+# declaration du module deploy-s3-scaleway
+module "deploy-s3-scaleway" {
+  source = "./modules/deploy-s3-scaleway"
+  scaleway_access_key = var.scaleway_access_key
+  scaleway_secret_key = var.scaleway_secret_key
+  scaleway_bucket_name = var.scaleway_bucket_name
+  scaleway_organization_id = var.scaleway_organization_id
+  scaleway_region = var.scaleway_region
+  scaleway_project_id = var.scaleway_project_id
+}
