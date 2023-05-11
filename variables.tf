@@ -205,3 +205,13 @@ variable "scaleway_project_id" {
     description = "Scaleway project id"
     type        = string
 }
+
+variable "scaleway_bucket_initial_name" {
+    description = "Scaleway bucket name"
+    type        = string
+}
+
+variable "scaleway_num_buckets" {
+    description = "Number of buckets to create"
+    type        = number
+}

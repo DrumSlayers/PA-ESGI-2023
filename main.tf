@@ -54,4 +54,6 @@ module "deploy-s3-scaleway" {
   scaleway_organization_id = var.scaleway_organization_id
   scaleway_region = var.scaleway_region
   scaleway_project_id = var.scaleway_project_id
+  scaleway_bucket_initial_name = var.scaleway_bucket_initial_name
+  scaleway_num_buckets = var.scaleway_num_buckets
 }
