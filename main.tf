@@ -1,16 +1,7 @@
-#Déclaration du module deploy-s3 avec ces variables
-module "deploy-s3" {
-  source                   = "./modules/deploy-s3"
-  aws_session_token        = var.aws_session_token
-  aws_secret_access_key           = var.aws_secret_access_key
-  aws_access_key_id           = var.aws_access_key_id 
-  bucket_name              = var.bucket_name
-  ec2-public-ip            = module.deploy-ec2.public-ip
-}
 #Déclaration du module deploy-ec2 avec ces variables 
 module "deploy-ec2" {
   depends_on = [
-    module.deploy-s3.aws_s3_bucket
+    module.deploy-s3-scaleway
   ]
   source                   = "./modules/deploy-ec2"
   ssh_key_name             = var.ssh_key_name
@@ -43,6 +34,8 @@ module "deploy-ec2" {
   vpc_cidr_block           = var.vpc_cidr_block
   vpc_instance_tenancy     = var.vpc_instance_tenancy
   vpc_subnet_cidr_block    = var.vpc_subnet_cidr_block
+  scaleway_access_key      = var.scaleway_access_key
+  scaleway_secret_key      = var.scaleway_secret_key
 }
 
 # declaration du module deploy-s3-scaleway
