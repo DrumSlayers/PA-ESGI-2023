@@ -1,6 +1,5 @@
 # Projet Annuel 2023
 #### Table of contents
-
 1. [Introduction](#introduction)
     * [Membres du projet](#membres-du-projet)
     * [Topo](#topo)
@@ -47,7 +46,7 @@ Il souhaite également une documentation du projet complète et qualitative, afi
 Debian :
 ```bash
 sudo apt install ansible python3-botocore python3-boto3 python3-bs4 python3-request python3-selenium python3-dotenv python3-rich
-```
+
 ansible-galaxy collection install amazon.aws
 ```
 
