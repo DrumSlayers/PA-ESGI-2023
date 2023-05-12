@@ -87,17 +87,20 @@ resource "aws_instance" "myec2" {
   key_name                    = aws_key_pair.ssh-key.key_name
   subnet_id                   = aws_subnet.subnet.id
   vpc_security_group_ids      = [aws_security_group.public-sg.id]
+  user_data_replace_on_change = true                                # Destroy & Recreate on user_data change
   associate_public_ip_address = true
   user_data = <<EOF
 #!/bin/bash
+# simple user
+echo $(whoami)  
 sudo apt-get update -y
 sudo apt-get install python3-pip -y
-pip3 install awscli
-pip3 install awscli_plugin_endpoint
 
-aws configure set plugins.endpoint awscli_plugin_endpoint
+su - ubuntu
+mkdir /home/ubuntu/.aws
+chown -R ubuntu:ubuntu /home/ubuntu/.aws
 
-cat << HEL >> ~/.aws/config
+cat << HEL >> /home/ubuntu/.aws/config
 [plugins]
 endpoint = awscli_plugin_endpoint
 [default]
@@ -107,7 +110,11 @@ s3 =
 s3api =
   endpoint_url = https://s3.fr-par.scw.cloud
 HEL
+chown ubuntu:ubuntu /home/ubuntu/.aws/config
+pip3 install awscli
+pip3 install awscli_plugin_endpoint
 
+aws configure set plugins.endpoint awscli_plugin_endpoint
 aws configure set aws_access_key_id ${var.scaleway_access_key}
 aws configure set aws_secret_access_key ${var.scaleway_secret_key}
 EOF
