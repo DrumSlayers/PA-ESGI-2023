@@ -94,20 +94,25 @@ sudo apt-get update -y
 sudo apt-get install awscli -y
 sudo apt-get install s3fs -y
 sudo apt-get install pydf -y
+sudo apt-get install python3-pip -y
+  pip3 install awscli_plugin_endpoint
 
-aws configure set aws_access_key_id_id  ${var.aws_access_key_id}
+aws configure set plugins.endpoint awscli_plugin_endpoint
+
+cat << HEL >> ~/.aws/config
+[plugins]
+endpoint = awscli_plugin_endpoint
+[default]
+region = fr-par
+s3 =
+  endpoint_url = https://s3.fr-par.scw.cloud
+s3api =
+  endpoint_url = https://s3.fr-par.scw.cloud
+HEL
+
+aws configure set aws_access_key_id ${var.aws_access_key_id}
 aws configure set aws_secret_access_key ${var.aws_secret_access_key}
-aws configure set aws_session_token ${var.aws_session_token}
-aws configure set default.region ${var.aws_region}
 
-# simple user
-user = $(whoami)
-
-sudo mkdir -p ${var.mount_point}
-sudo chown -R $user:$user ${var.mount_point}
-
-s3fs ${var.bucket_name} ${var.mount_point} -o profile=default -o nonempty,rw,allow_other,mp_umask=002,uid=1000,gid=1000  -o url=http://s3.us-east-1.amazonaws.com/
-sudo echo ${var.bucket_name} ${var.mount_point} fuse.s3fs _netdev,allow_other 0 0 >> /etc/fstab
 EOF
   tags = {
     "Name" = var.ec2_name

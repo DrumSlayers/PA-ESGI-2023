@@ -151,3 +151,14 @@ variable "vpc_subnet_cidr_block" {
   description = "CIDR BLock for the EC2 VPC Subnet"
   type = string
 }
+
+variable "scaleway_access_key" {
+  description = "Access key for Scaleway"
+  type = string
+}
+  
+variable "scaleway_secret_key" {
+  description = "Secret key for Scaleway"
+  type = string
+}
+  
