@@ -79,46 +79,46 @@ with console.status("[bold green] Running AWS Academy Scrapper...") as status:
     driver.quit()
     console.log(f"Values extracted and driver closed")
 
-    # == VALUES EXTRACTION ==
-    print("=== VALUES ===")
+# == VALUES EXTRACTION ==
+print("=== VALUES ===")
 
-    clikeybox_text=clikeybox.get_text()
-    aws_access_key_id = re.search(r'aws_access_key_id=([^\n]+)', clikeybox_text).group(1)
-    aws_secret_access_key = re.search(r'aws_secret_access_key=([^\n]+)', clikeybox_text).group(1)
-    aws_session_token = re.search(r'aws_session_token=([^\n]+)', clikeybox_text).group(1)
+clikeybox_text=clikeybox.get_text()
+aws_access_key_id = re.search(r'aws_access_key_id=([^\n]+)', clikeybox_text).group(1)
+aws_secret_access_key = re.search(r'aws_secret_access_key=([^\n]+)', clikeybox_text).group(1)
+aws_session_token = re.search(r'aws_session_token=([^\n]+)', clikeybox_text).group(1)
 
-    print("aws_access_key_id=" + aws_access_key_id)
-    print("aws_secret_access_key=" + aws_secret_access_key)
-    print("aws_session_token=" + aws_session_token)
+print("aws_access_key_id=" + aws_access_key_id)
+print("aws_secret_access_key=" + aws_secret_access_key)
+print("aws_session_token=" + aws_session_token)
 
-    # == VAR FILE INSERTION ==
-    # Replacing values in tfvars
-    # Read .tfvars file
-    filename = "terraform.tfvars"
-    with open(filename, "r") as file:
-        content = file.read()
+# == VAR FILE INSERTION ==
+# Replacing values in tfvars
+# Read .tfvars file
+filename = "terraform.tfvars"
+with open(filename, "r") as file:
+    content = file.read()
 
-    # Replace variables
-    content = re.sub(r"aws_access_key_id\s*=\s*\"[^\"]*\"", f'aws_access_key_id = "{aws_access_key_id}"', content)
-    content = re.sub(r"aws_secret_access_key\s*=\s*\"[^\"]*\"", f'aws_secret_access_key = "{aws_secret_access_key}"', content)
-    content = re.sub(r"aws_session_token\s*=\s*\"[^\"]*\"", f'aws_session_token = "{aws_session_token}"', content)
+# Replace variables
+content = re.sub(r"aws_access_key_id\s*=\s*\"[^\"]*\"", f'aws_access_key_id = "{aws_access_key_id}"', content)
+content = re.sub(r"aws_secret_access_key\s*=\s*\"[^\"]*\"", f'aws_secret_access_key = "{aws_secret_access_key}"', content)
+content = re.sub(r"aws_session_token\s*=\s*\"[^\"]*\"", f'aws_session_token = "{aws_session_token}"', content)
 
-    # Write updated content back to the .tfvars file
-    with open(filename, "w") as file:
-        file.write(content)
+# Write updated content back to the .tfvars file
+with open(filename, "w") as file:
+    file.write(content)
 
-    content = {}
-    # Replacing values in ansible aws_ec2
-    # Read .yml file
-    filename = "ansible/aws_ec2.yml"
-    with open(filename, "r") as file:
-        content = file.read()
+content = {}
+# Replacing values in ansible aws_ec2
+# Read .yml file
+filename = "ansible/aws_ec2.yml"
+with open(filename, "r") as file:
+    content = file.read()
 
-    # Replace variables
-    content = re.sub(r"aws_access_key\s*:\s*\"[^\"]*\"", f'aws_access_key: "{aws_access_key_id}"', content)
-    content = re.sub(r"aws_secret_key\s*:\s*\"[^\"]*\"", f'aws_secret_key: "{aws_secret_access_key}"', content)
-    content = re.sub(r"aws_security_token\s*:\s*\"[^\"]*\"", f'aws_security_token: "{aws_session_token}"', content)
+# Replace variables
+content = re.sub(r"aws_access_key\s*:\s*\"[^\"]*\"", f'aws_access_key: "{aws_access_key_id}"', content)
+content = re.sub(r"aws_secret_key\s*:\s*\"[^\"]*\"", f'aws_secret_key: "{aws_secret_access_key}"', content)
+content = re.sub(r"aws_security_token\s*:\s*\"[^\"]*\"", f'aws_security_token: "{aws_session_token}"', content)
 
-    # Write updated content back to the .tfvars file
-    with open(filename, "w") as file:
-        file.write(content)
+# Write updated content back to the .tfvars file
+with open(filename, "w") as file:
+    file.write(content)
