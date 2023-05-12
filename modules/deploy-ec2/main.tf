@@ -91,11 +91,9 @@ resource "aws_instance" "myec2" {
   user_data = <<EOF
 #!/bin/bash
 sudo apt-get update -y
-sudo apt-get install awscli -y
-sudo apt-get install s3fs -y
-sudo apt-get install pydf -y
 sudo apt-get install python3-pip -y
-  pip3 install awscli_plugin_endpoint
+pip3 install awscli
+pip3 install awscli_plugin_endpoint
 
 aws configure set plugins.endpoint awscli_plugin_endpoint
 
@@ -110,9 +108,8 @@ s3api =
   endpoint_url = https://s3.fr-par.scw.cloud
 HEL
 
-aws configure set aws_access_key_id ${var.aws_access_key_id}
-aws configure set aws_secret_access_key ${var.aws_secret_access_key}
-
+aws configure set aws_access_key_id ${var.scaleway_access_key}
+aws configure set aws_secret_access_key ${var.scaleway_secret_key}
 EOF
   tags = {
     "Name" = var.ec2_name
