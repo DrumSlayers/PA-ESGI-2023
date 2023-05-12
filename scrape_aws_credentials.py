@@ -115,9 +115,9 @@ with open(filename, "r") as file:
     content = file.read()
 
 # Replace variables
-content = re.sub(r"aws_access_key\s*:\s*\"[^\"]*\"", f'aws_access_key: "{aws_access_key_id}"', content)
-content = re.sub(r"aws_secret_key\s*:\s*\"[^\"]*\"", f'aws_secret_key: "{aws_secret_access_key}"', content)
-content = re.sub(r"aws_security_token\s*:\s*\"[^\"]*\"", f'aws_security_token: "{aws_session_token}"', content)
+content = re.sub(r"aws_access_key\s*:\s*.*", f'aws_access_key: "{aws_access_key_id}"', content)
+content = re.sub(r"aws_secret_key\s*:\s*.*", f'aws_secret_key: "{aws_secret_access_key}"', content)
+content = re.sub(r"aws_security_token\s*:\s*.*", f'aws_security_token: "{aws_session_token}"', content)
 
 # Write updated content back to the .tfvars file
 with open(filename, "w") as file:
