@@ -13,3 +13,6 @@ sudo chown -R $user:$user ${var.mount_point}
 s3fs ${var.bucket_name} ${var.mount_point} -o profile=default -o nonempty,rw,allow_other,mp_umask=002,uid=1000,gid=1000  -o url=http://s3.us-east-1.amazonaws.com/
 sudo echo ${var.bucket_name} ${var.mount_point} fuse.s3fs _netdev
 
+aws configure set plugins.endpoint awscli_plugin_endpoint
+aws configure set aws_access_key_id ${var.scaleway_access_key}
+aws configure set aws_secret_access_key ${var.scaleway_secret_key}

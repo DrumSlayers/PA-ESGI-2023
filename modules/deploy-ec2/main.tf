@@ -114,9 +114,16 @@ chown ubuntu:ubuntu /home/ubuntu/.aws/config
 pip3 install awscli
 pip3 install awscli_plugin_endpoint
 
-aws configure set plugins.endpoint awscli_plugin_endpoint
-aws configure set aws_access_key_id ${var.scaleway_access_key}
-aws configure set aws_secret_access_key ${var.scaleway_secret_key}
+cat << HEL >> /home/ubuntu/.aws/credentials
+[default]
+aws_access_key_id = ${var.scaleway_access_key}
+aws_secret_access_key = ${var.scaleway_secret_key}
+HEL
+
+chown ubuntu:ubuntu /home/ubuntu/.aws/config
+chmod 600 /home/ubuntu/.aws/config
+
+
 EOF
   tags = {
     "Name" = var.ec2_name
