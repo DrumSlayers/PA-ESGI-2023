@@ -62,7 +62,7 @@ The AWS Academy Learner Lab is giving new access tokens every 4 hours and at eve
 We are using Selenium with Chromium webdriver & BeautifulSoup python module for the web scrapping.
 > ℹ️ The script does insert new credentials into `terraform.tfvars` file and `ansible/aws_ec2.yml` inventory description file
 
-## Usage
+### Usage
 1. Copy `.env.exemple` to `.env` and edit the values with your AWS Academy credentials	
 2. Run ```python3 scrape_aws_credentials.py```
 
