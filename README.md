@@ -52,7 +52,7 @@ ansible-galaxy collection install amazon.aws
 
 ## Déploiement
 1. Fetch the AWS credentials using [AWS Academy Credentials scrapper](#aws-academy-credentials-scrapper) script
-2. `terraform init`
+2. `terraform init -backend-config=backend.conf`
 3. `terraform plan / deploy`
 
 ## AWS Academy Credentials scrapper
@@ -65,6 +65,9 @@ We are using Selenium with Chromium webdriver & BeautifulSoup python module for 
 1. Copy `.env.exemple` to `.env` and edit the values with your AWS Academy credentials	
 2. Run ```python3 scrape_aws_credentials.py```
 
+## Backend remote tfstate
+1. Copy `backend.conf.exemple` to `backend.conf` and edit the values with your Scaleway credentials	
+2. Run ```terraform init -backend-config=backend.conf``` to verify the backend configuration and if it's working
 
 ## A faire
 Voir discord channel #tache-a-faire
