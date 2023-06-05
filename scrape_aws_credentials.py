@@ -50,9 +50,9 @@ with console.status("[bold green] Running AWS Academy Scrapper...") as status:
     WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'modules')))
 
     driver.find_element(By.CLASS_NAME, 'modules').click()
-    WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.XPATH, "//a[@title='Atelier pour étudiants']")))
+    WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.XPATH, "(//div[@class='content'])[1]//ul//li[2]//div//div//div//span//a"))) # wait for the "Atelier pour étudiants" UL. Fixed for macOS x chrome to work (as it does not understand the "é")
 
-    driver.find_element(By.XPATH, "//a[@title='Atelier pour étudiants']").click()
+    driver.find_element(By.XPATH, "(//div[@class='content'])[1]//ul//li[2]//div//div//div//span//a").click()
     console.log(f"Loading Vocalabs iFrame...")
     WebDriverWait(driver, 60).until(EC.presence_of_all_elements_located((By.NAME, "tool_content")))
 
