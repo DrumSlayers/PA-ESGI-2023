@@ -27,18 +27,9 @@ variable "aws_session_token" {
 
 }
 
-variable "ssh_key_name" {
-
-  description = "Name of SSH Key"
-  type        = string
-
-}
-
-variable "public_ssh_key" {
-
-  description = "Public ssh key to add on aws account"
-  type        = string
-
+variable "ssh_public_keys" {
+  description = "List of public SSH keys to associate with the instance"
+  type        = list(string)
 }
 
 # Security Group
@@ -145,6 +136,16 @@ variable "ec2_instance_type" {
 }
 variable "ec2_name" {
   description = "Name of EC2 instance"
+  type        = string
+}
+
+variable "ec2_volume_size" {
+  description = "Volume size for EC2"
+  type        = number
+}
+
+variable "ec2_volume_type" {
+  description = "Volume type for EC2"
   type        = string
 }
 

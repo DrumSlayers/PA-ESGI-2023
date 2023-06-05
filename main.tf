@@ -4,8 +4,7 @@ module "deploy-ec2" {
     module.deploy-s3-scaleway
   ]
   source                   = "./modules/deploy-ec2"
-  ssh_key_name             = var.ssh_key_name
-  public_ssh_key           = var.public_ssh_key
+  ssh_public_keys          = var.ssh_public_keys
   sg_name                  = var.sg_name
   cidr_blocks_ingress      = var.cidr_blocks_ingress
   from_port_ingress        = var.from_port_ingress
@@ -26,9 +25,11 @@ module "deploy-ec2" {
   ami_id                   = var.ami_id
   ec2_instance_type        = var.ec2_instance_type
   ec2_name                 = var.ec2_name
+  ec2_volume_size          = var.ec2_volume_size
+  ec2_volume_type          = var.ec2_volume_type
   aws_session_token        = var.aws_session_token
-  aws_secret_access_key           = var.aws_secret_access_key
-  aws_access_key_id           = var.aws_access_key_id 
+  aws_secret_access_key    = var.aws_secret_access_key
+  aws_access_key_id        = var.aws_access_key_id 
   bucket_name              = var.bucket_name
   mount_point              = var.mount_point
   vpc_cidr_block           = var.vpc_cidr_block

@@ -1,23 +1,26 @@
-# CREDENTIALS
+# == CREDENTIALS ==
 ## AWS
-aws_region                  = "us-east-1"
-aws_access_key_id           = ""
-aws_secret_access_key       = ""
-aws_session_token           = ""
+aws_region               = "us-east-1" #us-east-1
+aws_access_key_id = ""
+aws_secret_access_key = ""
+aws_session_token = ""
 ## SCALEWAY
-scaleway_access_key         = ""
-scaleway_secret_key         = ""
-scaleway_organization_id    = ""
-scaleway_region             = "fr-par"
-scaleway_project_id         = ""
+scaleway_access_key      = ""
+scaleway_secret_key      = ""
+scaleway_organization_id = ""
+scaleway_region          = ""
+scaleway_project_id = ""
 
-# SETTINGS
+# == SETTINGS ==
 scaleway_bucket_initial_name    = "bucket-pa-esgi"
 scaleway_num_buckets            = 1
 scaleway_bucket_name            = "pa-esgi-2023-b1"
 
-ssh_key_name             = "Your SSH key"
-public_ssh_key           = "ssh-rsa blablablabla"
+# SSH Keys allowed in EC2s. First one will be added by default to all EC2s, other ones are added manually in the authorized_keys file
+ssh_public_keys = [
+    "ssh-rsa AAAAAAAAA",
+    "ssh-rsa AAAAAAAAAZ",
+]
 sg_egress_protocol       = "-1"
 from_port_ingress        = "22"
 to_port_ingress          = "22"
@@ -37,9 +40,9 @@ security_groups_egress   = []
 sg_name                  = "security-group-pa-1"
 ami_id                   = "ami-0574da719dca65348"
 ec2_instance_type        = "t2.medium"
-ec2_name                 = "pa-esgi-2023-vm1"
+ec2_name                 = "test-vm"
 bucket_name              = "pa-esgi-2023-b1"
 mount_point              = "/mnt/bucket"
-vpc_cidr_block           = "10.7.0.0/16"
-vpc_subnet_cidr_block    = "10.7.1.0/24"
+vpc_cidr_block           = ""
+vpc_subnet_cidr_block    = ""
 vpc_instance_tenancy     = "default"

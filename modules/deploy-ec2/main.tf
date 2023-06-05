@@ -1,26 +1,33 @@
 # EC2
 
+# SSH Keys
+resource "aws_key_pair" "ssh-keys" {
+  count      = length(var.ssh_public_keys)
+  key_name   = "ssh-keys_${count.index}"
+  public_key = element(var.ssh_public_keys, count.index)
+}
+
 # Virtual Private Cloud
 
-# Create VPC 
+# - Create VPC 
 resource "aws_vpc" "vpc" {
   cidr_block       = var.vpc_cidr_block
   instance_tenancy = var.vpc_instance_tenancy
   enable_dns_hostnames = true
 }
 
-# Create VPC subnet 
+# - Create VPC subnet 
 resource "aws_subnet" "subnet" {
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = var.vpc_subnet_cidr_block
 }
 
-# Create VPC internet gateway
+# - Create VPC internet gateway
 resource "aws_internet_gateway" "internet-gateway" {
   vpc_id            = aws_vpc.vpc.id
 }
 
-# Create routes for VPC from Internet to subnet
+# - Create routes for VPC from Internet to subnet
 resource "aws_route_table" "public-route-table" {
   vpc_id            = aws_vpc.vpc.id
 
@@ -73,27 +80,26 @@ resource "aws_security_group" "public-sg" {
 
 }
 
-# EC2 3CX Deploy
-
-resource "aws_key_pair" "ssh-key" {
-
-  key_name   = var.ssh_key_name
-  public_key = var.public_ssh_key
-}
-
-resource "aws_instance" "myec2" {
+# EC2 Dolibarr
+resource "aws_instance" "ec2-dolibarr" {
   ami                         = var.ami_id
   instance_type               = var.ec2_instance_type
-  key_name                    = aws_key_pair.ssh-key.key_name
+  key_name                    = aws_key_pair.ssh-keys[0].key_name
   subnet_id                   = aws_subnet.subnet.id
   vpc_security_group_ids      = [aws_security_group.public-sg.id]
   user_data_replace_on_change = true                                # Destroy & Recreate on user_data change
   associate_public_ip_address = true
+  root_block_device {
+    volume_size = var.ec2_volume_size
+    volume_type = var.ec2_volume_type
+  }
   user_data = <<EOF
 #!/bin/bash
 # simple user
 echo $(whoami)  
+echo '${join("\n", var.ssh_public_keys)}' >> /home/ubuntu/.ssh/authorized_keys
 sudo apt-get update -y
+sudo apt-get upgrade -y
 sudo apt-get install python3-pip -y
 
 su - ubuntu
