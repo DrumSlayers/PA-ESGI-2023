@@ -27,8 +27,8 @@ with console.status("[bold green] Running AWS Academy Scrapper...") as status:
     options = webdriver.ChromeOptions()
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument('--headless')
-    #options.add_argument("--disable-gpu")
+    #options.add_argument('--headless')
+    options.add_argument("--disable-gpu")
     chrome_prefs = {'profile.default_content_setting_values': {'cookies': 1}, 'profile.cookie_controls_mode': 0}
     options.add_experimental_option('prefs', chrome_prefs)
 
@@ -50,9 +50,9 @@ with console.status("[bold green] Running AWS Academy Scrapper...") as status:
     WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'modules')))
 
     driver.find_element(By.CLASS_NAME, 'modules').click()
-    WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.XPATH, "//a[@title='Learner Lab']")))
+    WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.XPATH, "//a[@title='Atelier pour étudiants']")))
 
-    driver.find_element(By.XPATH, "//a[@title='Learner Lab']").click()
+    driver.find_element(By.XPATH, "//a[@title='Atelier pour étudiants']").click()
     console.log(f"Loading Vocalabs iFrame...")
     WebDriverWait(driver, 60).until(EC.presence_of_all_elements_located((By.NAME, "tool_content")))
 
