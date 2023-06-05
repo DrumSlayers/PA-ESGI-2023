@@ -1,6 +1,9 @@
 # Local .terraform directories
 **/.terraform/*
 
+# Local .vscode directory
+.vscode
+
 # .tfstate files
 *.tfstate
 *.tfstate.*
@@ -37,6 +40,3 @@ ansible/aws_ec2.yml
 
 # Backend remote state credentials
 backend.conf
-
-# vscode
-.vscode/*
