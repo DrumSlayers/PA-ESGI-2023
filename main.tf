@@ -38,6 +38,7 @@ module "deploy-ec2" {
   vpc_subnet_cidr_block    = var.vpc_subnet_cidr_block
   scaleway_access_key      = var.scaleway_access_key
   scaleway_secret_key      = var.scaleway_secret_key
+  cloudflare_zone_id       = var.cloudflare_zone_id
 }
 
 # declaration du module deploy-s3-scaleway

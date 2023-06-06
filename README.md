@@ -49,6 +49,7 @@ Debian :
 sudo apt install ansible python3-botocore python3-boto3 python3-bs4 python3-request python3-selenium python3-dotenv python3-rich
 
 ansible-galaxy collection install amazon.aws
+ansible-galaxy collection install community.mysql
 ```
 
 ## Déploiement

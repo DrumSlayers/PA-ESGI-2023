@@ -167,11 +167,20 @@ EOF
 
 }
 # EC2 DNS Entries
-resource "cloudflare_record" "dolibarr_cname" {
+resource "cloudflare_record" "cname-dolibarr" {
   zone_id = var.cloudflare_zone_id
   name    = "crm.transexpress.ovh"
   value   = "${aws_instance.ec2-dolibarr.public_dns}"
   type    = "CNAME"
-  ttl     = 300
-  proxied = true
+  ttl     = 120
+  proxied = false
+}
+
+resource "cloudflare_record" "cname-nextcloud" {
+  zone_id = var.cloudflare_zone_id
+  name    = "cloud.transexpress.ovh"
+  value   = "${aws_instance.ec2-nextcloud.public_dns}"
+  type    = "CNAME"
+  ttl     = 120
+  proxied = false
 }
