@@ -93,42 +93,7 @@ resource "aws_instance" "ec2-dolibarr" {
     volume_size = var.ec2_volume_size
     volume_type = var.ec2_volume_type
   }
-  user_data = <<EOF
-#!/bin/bash
-# simple user
-echo $(whoami)  
-echo '${join("\n", var.ssh_public_keys)}' >> /home/ubuntu/.ssh/authorized_keys
-sudo apt-get update -y
-sudo apt-get upgrade -y
-sudo apt-get install python3-pip -y
-
-su - ubuntu
-mkdir /home/ubuntu/.aws
-chown -R ubuntu:ubuntu /home/ubuntu/.aws
-
-cat << HEL >> /home/ubuntu/.aws/config
-[plugins]
-endpoint = awscli_plugin_endpoint
-[default]
-region = fr-par
-s3 =
-  endpoint_url = https://s3.fr-par.scw.cloud
-s3api =
-  endpoint_url = https://s3.fr-par.scw.cloud
-HEL
-chown ubuntu:ubuntu /home/ubuntu/.aws/config
-pip3 install awscli
-pip3 install awscli_plugin_endpoint
-
-cat << HEL >> /home/ubuntu/.aws/credentials
-[default]
-aws_access_key_id = ${var.scaleway_access_key}
-aws_secret_access_key = ${var.scaleway_secret_key}
-HEL
-
-chown ubuntu:ubuntu /home/ubuntu/.aws/config
-chmod 600 /home/ubuntu/.aws/config
-EOF
+  user_data = "${file("./deploy-scripts/dolibarr.sh")}"
 
   tags = {
     "Name" = var.ec2_name
@@ -149,24 +114,7 @@ resource "aws_instance" "ec2-nextcloud" {
     volume_size = var.ec2_volume_size
     volume_type = var.ec2_volume_type
   }
-  user_data = <<EOF
-#!/bin/bash
-# simple user
-echo $(whoami)  
-echo '${join("\n", var.ssh_public_keys)}' >> /home/ubuntu/.ssh/authorized_keys
-sudo apt-get update -y
-sudo apt-get upgrade -y
-sudo apt-get install ca-certificates curl gnupg -y
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-echo \
-"deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-"$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update -y
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-EOF
+  user_data = "${file("./deploy-scripts/nextcloud.sh")}"
 
   tags = {
     "Name" = var.ec2_name_storage
