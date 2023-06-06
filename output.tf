@@ -5,7 +5,7 @@ output "dolibarr-dns" {
 
 output "nextcloud-dns" {
   description = "Nom DNS public de notre EC2 Nextcloud"
-    value = "${module.deploy-ec2.dolibarr-dns}"
+    value = "${module.deploy-ec2.nextcloud-dns}"
 }
 
 # debug template
