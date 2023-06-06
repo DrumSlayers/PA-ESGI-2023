@@ -139,6 +139,12 @@ variable "ec2_name" {
   type        = string
 }
 
+variable "ec2_name_storage" {
+  description = "Name of EC2 instance"
+  type        = string
+}
+
+
 variable "ec2_volume_size" {
   description = "Volume size for EC2"
   type        = number

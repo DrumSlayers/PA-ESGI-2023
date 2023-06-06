@@ -136,3 +136,33 @@ EOF
   }
 
 }
+
+ # EC2 Nextcloud  
+resource "aws_instance" "ec2-nextcloud" {
+  ami                         = var.ami_id
+  instance_type               = var.ec2_instance_type
+  key_name                    = aws_key_pair.ssh-keys[0].key_name
+  subnet_id                   = aws_subnet.subnet.id
+  vpc_security_group_ids      = [aws_security_group.public-sg.id]
+  user_data_replace_on_change = true                                # Destroy & Recreate on user_data change
+  associate_public_ip_address = true
+  root_block_device {
+    volume_size = var.ec2_volume_size
+    volume_type = var.ec2_volume_type
+  }
+  user_data = <<EOF
+#!/bin/bash
+# simple user
+echo $(whoami)  
+echo '${join("\n", var.ssh_public_keys)}' >> /home/ubuntu/.ssh/authorized_keys
+sudo apt-get update -y
+sudo apt-get upgrade -y
+
+su - ubuntu
+
+EOF
+  tags = {
+    "Name" = var.ec2_name_storage
+  }
+
+}

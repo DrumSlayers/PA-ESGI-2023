@@ -114,6 +114,7 @@ variable "security_groups_egress" {
 variable "ami_id" {}
 variable "ec2_instance_type" {}
 variable "ec2_name" {}
+variable "ec2_name_storage" {}
 
 variable "ec2_volume_size" {
   description = "Volume size for EC2"
@@ -161,4 +162,6 @@ variable "scaleway_secret_key" {
   description = "Secret key for Scaleway"
   type = string
 }
+
+
   

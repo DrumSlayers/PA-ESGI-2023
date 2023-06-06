@@ -25,6 +25,7 @@ module "deploy-ec2" {
   ami_id                   = var.ami_id
   ec2_instance_type        = var.ec2_instance_type
   ec2_name                 = var.ec2_name
+  ec2_name_storage         = var.ec2_name_storage
   ec2_volume_size          = var.ec2_volume_size
   ec2_volume_type          = var.ec2_volume_type
   aws_session_token        = var.aws_session_token
