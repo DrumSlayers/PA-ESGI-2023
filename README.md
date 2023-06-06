@@ -51,6 +51,20 @@ sudo apt install ansible python3-botocore python3-boto3 python3-bs4 python3-requ
 ansible-galaxy collection install amazon.aws
 ansible-galaxy collection install community.mysql
 ```
+#### Terraform
+##### Backend remote tfstate
+1. Copy `backend.conf.exemple` to `backend.conf` and edit the values with your Scaleway credentials	
+2. Run ```terraform init -backend-config=backend.conf``` to verify the backend configuration and if it's working
+
+##### Multiple platform lock dependencies
+```bash
+terraform providers lock \
+    -platform=windows_amd64 \
+    -platform=darwin_amd64 \
+    -platform=linux_amd64 \
+    -platform=darwin_arm64 \
+    -platform=linux_arm64
+```
 
 ## Déploiement
 1. Fetch the AWS credentials using [AWS Academy Credentials scrapper](#aws-academy-credentials-scrapper) script
@@ -66,10 +80,6 @@ We are using Selenium with Chromium webdriver & BeautifulSoup python module for 
 ### Usage
 1. Copy `.env.exemple` to `.env` and edit the values with your AWS Academy credentials	
 2. Run ```python3 scrape_aws_credentials.py```
-
-## Backend remote tfstate
-1. Copy `backend.conf.exemple` to `backend.conf` and edit the values with your Scaleway credentials	
-2. Run ```terraform init -backend-config=backend.conf``` to verify the backend configuration and if it's working
 
 ## A faire
 Voir discord channel #tache-a-faire
