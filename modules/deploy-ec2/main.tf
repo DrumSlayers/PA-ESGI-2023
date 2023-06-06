@@ -93,7 +93,7 @@ resource "aws_instance" "ec2-dolibarr" {
     volume_size = var.ec2_volume_size
     volume_type = var.ec2_volume_type
   }
-  user_data = "${file("./deploy-scripts/dolibarr.sh")}"
+  user_data = "${file("./modules/deploy-ec2/deploy-scripts/dolibarr.sh")}"
 
   tags = {
     "Name" = var.ec2_name
@@ -114,7 +114,7 @@ resource "aws_instance" "ec2-nextcloud" {
     volume_size = var.ec2_volume_size
     volume_type = var.ec2_volume_type
   }
-  user_data = "${file("./deploy-scripts/nextcloud.sh")}"
+  user_data = "${file("./modules/deploy-ec2/deploy-scripts/nextcloud.sh")}"
 
   tags = {
     "Name" = var.ec2_name_storage
