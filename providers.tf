@@ -9,6 +9,10 @@ terraform {
       source = "scaleway/scaleway"
       version = "2.18.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 2.0"
+    }
   }
 }
 
@@ -26,4 +30,8 @@ provider "scaleway" {
   secret_key = var.scaleway_secret_key
   organization_id = var.scaleway_organization_id
   region = var.scaleway_region
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }

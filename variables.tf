@@ -222,3 +222,13 @@ variable "scaleway_num_buckets" {
     description = "Number of buckets to create"
     type        = number
 }
+
+variable "cloudflare_api_token" {
+  description = "API token for Cloudflare"
+  type        = string
+}
+
+variable "cloudflare_zone_id" {
+  description = "Cloudflare Zone ID"
+  type        = string
+}

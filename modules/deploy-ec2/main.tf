@@ -166,3 +166,12 @@ EOF
   }
 
 }
+# EC2 DNS Entries
+resource "cloudflare_record" "dolibarr_cname" {
+  zone_id = var.cloudflare_zone_id
+  name    = "crm.transexpress.ovh"
+  value   = "${aws_instance.ec2-dolibarr.public_dns}"
+  type    = "CNAME"
+  ttl     = 300
+  proxied = true
+}

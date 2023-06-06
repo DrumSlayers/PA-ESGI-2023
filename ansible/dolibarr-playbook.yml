@@ -1,0 +1,138 @@
+---
+- name: Install Dolibarr on Ubuntu 22.04 VM with MySQL and Dolibarr data on S3
+  hosts: tag_Name_vm_dolibarr
+  become: yes
+  vars:
+    mysql_root_password: 'your_mysql_root_password'
+    dolibarr_db_name: 'dolibarr_db'
+    dolibarr_db_user: 'dolibarr_user'
+    dolibarr_db_password: 'your_dolibarr_user_password'
+    dolibarr_url_path: '/dolibarr'
+    mysql_datadir: '/mnt/s3/mysql'
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - apache2
+          - php
+          - libapache2-mod-php
+          - php-mysql
+          - mysql-server
+          - unzip
+        state: present
+
+    - name: Ensure /mnt/s3 and MySQL datadir paths exist
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /mnt/s3
+        - "{{ mysql_datadir }}"
+
+    - name: Stop MySQL service
+      service:
+        name: mysql
+        state: stopped
+
+    - name: Change MySQL datadir in my.cnf
+      lineinfile:
+        path: /etc/mysql/mysql.conf.d/mysqld.cnf
+        regexp: '^datadir'
+        line: "datadir = {{ mysql_datadir }}"
+      notify: restart mysql
+
+    - name: Move MySQL data to /mnt/s3/mysql
+      command: mv /var/lib/mysql/* {{ mysql_datadir }}
+      args:
+        removes: /var/lib/mysql/*
+
+    - name: Start and enable MySQL service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: Set MySQL root password
+      mysql_user:
+        name: root
+        password: "{{ mysql_root_password }}"
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+
+    - name: Create Dolibarr MySQL database
+      mysql_db:
+        name: "{{ dolibarr_db_name }}"
+        state: present
+
+    - name: Create Dolibarr MySQL user and grant privileges
+      mysql_user:
+        name: "{{ dolibarr_db_user }}"
+        password: "{{ dolibarr_db_password }}"
+        priv: "{{ dolibarr_db_name }}.*:ALL"
+        state: present
+
+    - name: Download Dolibarr
+      get_url:
+        url: https://sourceforge.net/projects/dolibarr/files/Dolibarr%20ERP-CRM/14.0.1/dolibarr-14.0.1.tgz
+        dest: /tmp/dolibarr.tgz
+    
+    - name: Unpack Dolibarr archive in /var/www/html{{ dolibarr_url_path }}
+      unarchive:
+        src: /tmp/dolibarr.tgz
+        dest: /var/www/html/
+        remote_src: yes
+      notify: restart apache2
+    
+    - name: Copy Dolibarr configuration
+      copy:
+        src: /var/www/html{{ dolibarr_url_path }}/htdocs/conf/conf.php.example
+        dest: /mnt/s3/conf.php
+        remote_src: yes
+    
+    - name: Update conf.php with MySQL credentials, paths, etc.
+      lineinfile:
+        path: /mnt/s3/conf.php
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      loop:
+        - { regexp: '^\$dolibarr_main_db_host\s*=', line: "$dolibarr_main_db_host='localhost';" }
+        - { regexp: '^\$dolibarr_main_db_name\s*=', line: "$dolibarr_main_db_name='{{ dolibarr_db_name }}';" }
+        - { regexp: '^\$dolibarr_main_db_user\s*=', line: "$dolibarr_main_db_user='{{ dolibarr_db_user }}';" }
+        - { regexp: '^\$dolibarr_main_db_pass\s*=', line: "$dolibarr_main_db_pass='{{ dolibarr_db_password }}';" }
+        - { regexp: '^\$dolibarr_main_data_root\s*=', line: "$dolibarr_main_data_root='/mnt/s3';" }
+        - { regexp: '^\$dolibarr_main_url_root\s*=', line: "$dolibarr_main_url_root='http://{{ ansible_fqdn }}{{ dolibarr_url_path }}/htdocs';" }
+    
+    - name: Set permissions on Dolibarr
+      file:
+        path: "{{ item }}"
+        owner: www-data
+        group: www-data
+        recurse: yes
+      with_items: ["/var/www/html{{ dolibarr_url_path }}/htdocs", "/mnt/s3"]
+    
+    - name: Create symlink for Dolibarr config
+      file:
+        src: /mnt/s3/conf.php
+        dest: /var/www/html{{ dolibarr_url_path }}/htdocs/conf/conf.php
+        state: link
+    
+    - name: Ensure correct index file
+      copy:
+        src: /var/www/html{{ dolibarr_url_path }}/htdocs/index.php.index.html
+        dest: /var/www/html{{ dolibarr_url_path }}/htdocs/index.php
+        remote_src: yes
+  
+  handlers:
+    - name: restart apache2
+      service:
+        name: apache2
+        state: restarted
+
+    - name: restart mysql
+      service:
+        name: mysql
+        state: restarted

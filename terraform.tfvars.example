@@ -10,6 +10,9 @@ scaleway_secret_key      = ""
 scaleway_organization_id = ""
 scaleway_region          = ""
 scaleway_project_id = ""
+## CLOUDFLARE
+cloudflare_api_token     =  ""
+cloudflare_zone_id       =  ""
 
 # == SETTINGS ==
 scaleway_bucket_initial_name    = "bucket-pa-esgi"
