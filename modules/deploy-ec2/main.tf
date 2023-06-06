@@ -128,9 +128,8 @@ HEL
 
 chown ubuntu:ubuntu /home/ubuntu/.aws/config
 chmod 600 /home/ubuntu/.aws/config
-
-
 EOF
+
   tags = {
     "Name" = var.ec2_name
   }
@@ -167,8 +166,8 @@ echo \
 sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update -y
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-
 EOF
+
   tags = {
     "Name" = var.ec2_name_storage
   }
