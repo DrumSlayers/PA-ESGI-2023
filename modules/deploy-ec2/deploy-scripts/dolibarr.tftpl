@@ -1,7 +1,9 @@
 #!/bin/bash
 # simple user
-echo $(whoami)  
-echo '${join("\n", var.ssh_public_keys)}' >> /home/ubuntu/.ssh/authorized_keys
+echo $(whoami)
+%{ for ssh-key in ssh_public_keys }
+echo ${ssh-key} >> /home/ubuntu/.ssh/authorized_keys
+%{ endfor ~}
 sudo apt-get update -y
 sudo apt-get upgrade -y
 sudo apt-get install python3-pip -y
@@ -26,8 +28,8 @@ pip3 install awscli_plugin_endpoint
 
 cat << HEL >> /home/ubuntu/.aws/credentials
 [default]
-aws_access_key_id = ${var.scaleway_access_key}
-aws_secret_access_key = ${var.scaleway_secret_key}
+aws_access_key_id = ${scaleway_access_key}
+aws_secret_access_key = ${scaleway_secret_key}
 HEL
 
 chown ubuntu:ubuntu /home/ubuntu/.aws/config

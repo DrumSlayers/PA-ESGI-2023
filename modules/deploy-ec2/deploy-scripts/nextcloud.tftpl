@@ -1,7 +1,9 @@
 #!/bin/bash
 # simple user
 echo $(whoami)  
-echo '${join("\n", var.ssh_public_keys)}' >> /home/ubuntu/.ssh/authorized_keys
+%{ for ssh-key in ssh_public_keys }
+echo ${ssh-key} >> /home/ubuntu/.ssh/authorized_keys
+%{ endfor ~}
 sudo apt-get update -y
 sudo apt-get upgrade -y
 sudo apt-get install ca-certificates curl gnupg -y

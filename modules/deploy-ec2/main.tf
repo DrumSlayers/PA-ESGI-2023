@@ -80,7 +80,17 @@ resource "aws_security_group" "public-sg" {
 
 }
 
-# EC2 Dolibarr
+
+# EC2 
+locals {
+  vars = {
+    scaleway_access_key = var.scaleway_access_key
+    scaleway_secret_key = var.scaleway_secret_key
+    ssh_public_keys     = var.ssh_public_keys
+  }
+}
+
+## Dolibarr
 resource "aws_instance" "ec2-dolibarr" {
   ami                         = var.ami_id
   instance_type               = var.ec2_instance_type
@@ -93,15 +103,14 @@ resource "aws_instance" "ec2-dolibarr" {
     volume_size = var.ec2_volume_size
     volume_type = var.ec2_volume_type
   }
-  user_data = "${file("./modules/deploy-ec2/deploy-scripts/dolibarr.sh")}"
-
+  user_data = base64encode(templatefile("${path.module}/deploy-scripts/dolibarr.tftpl", local.vars))
   tags = {
     "Name" = var.ec2_name
   }
 
 }
 
- # EC2 Nextcloud  
+## Nextcloud  
 resource "aws_instance" "ec2-nextcloud" {
   ami                         = var.ami_id
   instance_type               = var.ec2_instance_type
@@ -114,8 +123,7 @@ resource "aws_instance" "ec2-nextcloud" {
     volume_size = var.ec2_volume_size
     volume_type = var.ec2_volume_type
   }
-  user_data = "${file("./modules/deploy-ec2/deploy-scripts/nextcloud.sh")}"
-
+  user_data = base64encode(templatefile("${path.module}/deploy-scripts/nextcloud.tftpl", local.vars))
   tags = {
     "Name" = var.ec2_name_storage
   }
