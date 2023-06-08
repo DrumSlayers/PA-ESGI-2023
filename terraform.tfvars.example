@@ -24,26 +24,7 @@ ssh_public_keys = [
     "ssh-rsa AAAAAAAAA",
     "ssh-rsa AAAAAAAAAZ",
 ]
-sg_egress_protocol       = "-1"
-from_port_ingress        = "22"
-to_port_ingress          = "22"
-protocol_ingress         = "tcp"
-cidr_blocks_ingress      = ["0.0.0.0/0"]
-ipv6_cidr_blocks_ingress = []
-prefix_list_ids_ingress  = []
-security_groups_ingress  = []
-self_ingress             = false
-from_port_egress         = "0"
-to_port_egress           = "0"
-cidr_blocks_egress       = ["0.0.0.0/0"]
-self_egress              = false
-ipv6_cidr_blocks_egress  = []
-prefix_list_ids_egress   = []
-security_groups_egress   = []
-sg_name                  = "security-group-pa-1"
-ami_id                   = "ami-0574da719dca65348"
-ec2_instance_type        = "t2.medium"
-ec2_name                 = "test-vm"
+
 bucket_name              = "pa-esgi-2023-b1"
 mount_point              = "/mnt/bucket"
 vpc_cidr_block           = ""
@@ -71,7 +52,12 @@ ec2-config = {
         to = 22
         source="0.0.0.0/0"
       }
-    ]
+    ],
+    ami_id                  = "ami-053b0d53c279acc90",
+    instance_type           = "t2.large",
+    volume_size             = 30,
+    volume_type             = "gp2",
+    dns_name                = "crm.transexpress.ovh",
   },
   "vm-nextcloud" = {
     ports = [       
@@ -90,6 +76,11 @@ ec2-config = {
         to = 22
         source="0.0.0.0/0"
       }
-    ]
+    ],
+    ami_id                  = "ami-053b0d53c279acc90",
+    instance_type           = "t2.large",
+    volume_size             = 30,
+    volume_type             = "gp2",
+    dns_name                = "cloud.transexpress.ovh",
   }
 } 
