@@ -49,3 +49,47 @@ mount_point              = "/mnt/bucket"
 vpc_cidr_block           = ""
 vpc_subnet_cidr_block    = ""
 vpc_instance_tenancy     = "default"
+
+sns_phone_number         = "+33xxxxxxxxx"
+sns_email_address        = "xx@xx.fr"
+
+ec2-config = {
+  "vm-dolibarr" = {
+      ports  = [
+      {
+        from = 443
+        to = 443
+        source="0.0.0.0/0"
+      },
+      {
+        from = 80
+        to = 80
+        source="0.0.0.0/0"
+      },
+        {
+        from = 22
+        to = 22
+        source="0.0.0.0/0"
+      }
+    ]
+  },
+  "vm-nextcloud" = {
+    ports = [       
+      {
+        from = 443
+        to = 443
+        source="0.0.0.0/0"
+      },
+      {
+        from = 80
+        to = 80
+        source="0.0.0.0/0"
+      },
+        {
+        from = 22
+        to = 22
+        source="0.0.0.0/0"
+      }
+    ]
+  }
+} 

@@ -5,7 +5,7 @@ module "deploy-ec2" {
   ]
   source                   = "./modules/deploy-ec2"
   ssh_public_keys          = var.ssh_public_keys
-  sg_name                  = var.sg_name
+  /* sg_name                  = var.sg_name
   cidr_blocks_ingress      = var.cidr_blocks_ingress
   from_port_ingress        = var.from_port_ingress
   ipv6_cidr_blocks_ingress = var.ipv6_cidr_blocks_ingress
@@ -21,13 +21,14 @@ module "deploy-ec2" {
   self_egress              = var.self_egress
   ipv6_cidr_blocks_egress  = var.ipv6_cidr_blocks_egress
   prefix_list_ids_egress   = var.prefix_list_ids_egress
-  security_groups_egress   = var.security_groups_egress
-  ami_id                   = var.ami_id
-  ec2_instance_type        = var.ec2_instance_type
-  ec2_name                 = var.ec2_name
-  ec2_name_storage         = var.ec2_name_storage
-  ec2_volume_size          = var.ec2_volume_size
-  ec2_volume_type          = var.ec2_volume_type
+  security_groups_egress   = var.security_groups_egress */
+  ec2-config               = var.ec2-config
+#  ami_id                   = var.ami_id
+ # ec2_instance_type        = var.ec2_instance_type
+ # ec2_name                 = var.ec2_name
+ # ec2_name_storage         = var.ec2_name_storage
+ # ec2_volume_size          = var.ec2_volume_size
+ # ec2_volume_type          = var.ec2_volume_type
   aws_session_token        = var.aws_session_token
   aws_secret_access_key    = var.aws_secret_access_key
   aws_access_key_id        = var.aws_access_key_id 
@@ -52,4 +53,25 @@ module "deploy-s3-scaleway" {
   scaleway_project_id = var.scaleway_project_id
   scaleway_bucket_initial_name = var.scaleway_bucket_initial_name
   scaleway_num_buckets = var.scaleway_num_buckets
+}
+
+# SNS Topic
+module "sns" {
+  depends_on = [
+    module.deploy-ec2
+  ]
+  source = "./modules/sns"
+  sns_phone_number  = var.sns_phone_number
+  sns_email_address = var.sns_email_address
+}
+
+# Cloudwatch monitoring
+module "cloudwatch_alarm" {
+  depends_on = [
+    module.sns
+  ]
+  for_each = module.deploy-ec2.ec2_instance_ids
+  source = "./modules/cloudwatch"
+  instance-id   = each.value
+  sns_topic-arn = module.sns.sns_topic-arn
 }

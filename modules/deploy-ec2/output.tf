@@ -1,14 +1,14 @@
-#Output de l'ip publique pour faciliter la connection à l'EC2
-output "dolibarr-dns" {
-  description = "Nom DNS public de notre EC2 Dolibarr"
-  value       = aws_instance.ec2-dolibarr.public_dns
+output "vm-dns" {
+  description = "Nom DNS public de nos EC2"
+  //value       = aws_instance.ec2-nextcloud.public_dns
+  value = {
+    for instance in aws_instance.vm : instance.tags["Name"] => instance.public_dns
+  }
 }
 
-output "nextcloud-dns" {
-  description = "Nom DNS public de notre EC2 Nextcloud"
-  value       = aws_instance.ec2-nextcloud.public_dns
+output "ec2_instance_ids" {
+  value = { for key, instance in aws_instance.vm : key => instance.id }
 }
-
 # debug template
 /* 
 output "rendered-tpl1" {

@@ -1,3 +1,8 @@
+# EC2 Declaration
+variable "ec2-config" {
+   description = "List of EC2 with their respective configuration"
+}
+
 variable "aws_region" {
 
   description = "Region of aws deployment"
@@ -33,7 +38,7 @@ variable "ssh_public_keys" {
 }
 
 # Security Group
-
+/* 
 variable "sg_name" {
   type        = string
   description = "name of security group"
@@ -109,7 +114,7 @@ variable "self_egress" {
 
 variable "security_groups_egress" {
   type = list(string)
-}
+} 
 
 variable "ami_id" {}
 variable "ec2_instance_type" {}
@@ -124,7 +129,8 @@ variable "ec2_volume_type" {
   description = "Volume type for EC2"
   type        = string
 }
-  
+
+*/
 variable "bucket_name" {
 
   description = "Name of Bucket S3"

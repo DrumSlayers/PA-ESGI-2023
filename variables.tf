@@ -1,3 +1,8 @@
+# EC2 Declaration
+variable "ec2-config" {
+   description = "List of EC2 with their respective configuration"
+}
+
 variable "aws_region" {
 
   description = "Region of aws deployment"
@@ -31,7 +36,7 @@ variable "ssh_public_keys" {
   description = "List of public SSH keys to associate with the instance"
   type        = list(string)
 }
-
+/* 
 # Security Group
 
 variable "sg_name" {
@@ -153,7 +158,8 @@ variable "ec2_volume_size" {
 variable "ec2_volume_type" {
   description = "Volume type for EC2"
   type        = string
-}
+}  
+*/
 
 variable "mount_point" {
   description = "Mount point of Bucket S3 in EC2"
@@ -231,4 +237,12 @@ variable "cloudflare_api_token" {
 variable "cloudflare_zone_id" {
   description = "Cloudflare Zone ID"
   type        = string
+}
+
+variable "sns_phone_number" {
+  description = "Phone number for SMS Alerts"
+}
+
+variable "sns_email_address" {
+  description = "Email address for Email Alerts"
 }

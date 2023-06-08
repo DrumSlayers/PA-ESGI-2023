@@ -47,7 +47,40 @@ resource "aws_route_table_association" "public-rt-to-subnet" {
   route_table_id = aws_route_table.public-route-table.id
 }
 
-resource "aws_security_group" "public-sg" {
+resource "aws_security_group" "ec2_sg" {
+  for_each = var.ec2-config
+  name = "${each.key}-sg"
+  description = "The security group of ${each.key} EC2"
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    "Server" = "${each.key}"
+    "Provider" = "Terraform"
+  }
+
+  dynamic "ingress" {
+    for_each = each.value.ports[*]
+    content {
+      from_port   =  ingress.value.from
+      to_port     =  ingress.value.to
+      protocol    = "tcp"
+      cidr_blocks = ingress.value.source != "::/0" ? [ingress.value.source] : null
+      ipv6_cidr_blocks = ingress.value.source =="::/0" ? [ingress.value.source] : null
+      security_groups = null 
+    }
+  }
+
+  egress {
+      from_port   = 0
+      to_port     = 0
+      protocol    = -1
+      cidr_blocks = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = ["::/0"]
+    } 
+}
+
+
+/* resource "aws_security_group" "public-sg" {
 
   #description = "security group to allow incoming SSH connection to ec2 instance"
   name = var.sg_name
@@ -78,8 +111,7 @@ resource "aws_security_group" "public-sg" {
 
   }]
 
-}
-
+} */
 
 # EC2 
 locals {
@@ -90,13 +122,34 @@ locals {
   }
 }
 
+resource "aws_instance" "vm" {
+  for_each                    = var.ec2-config
+  ami                         = each.value.ami_id
+  instance_type               = each.value.instance_type
+  key_name                    = aws_key_pair.ssh-keys[0].key_name
+  subnet_id                   = aws_subnet.subnet.id
+  vpc_security_group_ids      = [aws_security_group.ec2_sg[each.key].id]
+  user_data_replace_on_change = true                                # Destroy & Recreate on user_data change
+  associate_public_ip_address = true
+  root_block_device {
+    volume_size = each.value.volume_size
+    volume_type = each.value.volume_type
+  }
+  user_data = base64encode(templatefile("${path.module}/deploy-scripts/${each.key}.tftpl", local.vars))
+  tags = {
+    "Name" = each.key
+    "DNS" = each.value.dns_name
+  }
+}
+
 ## Dolibarr
-resource "aws_instance" "ec2-dolibarr" {
+/* resource "aws_instance" "ec2-dolibarr" {
   ami                         = var.ami_id
+  name = "vm-${each.key}"
   instance_type               = var.ec2_instance_type
   key_name                    = aws_key_pair.ssh-keys[0].key_name
   subnet_id                   = aws_subnet.subnet.id
-  vpc_security_group_ids      = [aws_security_group.public-sg.id]
+  vpc_security_group_ids      = [aws_security_group.ec2_sg["vm-dolibarr"].id]
   user_data_replace_on_change = true                                # Destroy & Recreate on user_data change
   associate_public_ip_address = true
   root_block_device {
@@ -116,7 +169,7 @@ resource "aws_instance" "ec2-nextcloud" {
   instance_type               = var.ec2_instance_type
   key_name                    = aws_key_pair.ssh-keys[0].key_name
   subnet_id                   = aws_subnet.subnet.id
-  vpc_security_group_ids      = [aws_security_group.public-sg.id]
+  vpc_security_group_ids      = [aws_security_group.ec2_sg["vm-nextcloud"].id]
   user_data_replace_on_change = true                                # Destroy & Recreate on user_data change
   associate_public_ip_address = true
   root_block_device {
@@ -128,8 +181,21 @@ resource "aws_instance" "ec2-nextcloud" {
     "Name" = var.ec2_name_storage
   }
 
-}
+} */
+
 # EC2 DNS Entries
+resource "cloudflare_record" "cname" {
+  for_each = aws_instance.vm
+
+  zone_id = var.cloudflare_zone_id
+  name    = each.value.tags.DNS
+  value   = each.value.public_dns
+  type    = "CNAME"
+  ttl     = 120
+  proxied = false
+}
+
+/* 
 resource "cloudflare_record" "cname-dolibarr" {
   zone_id = var.cloudflare_zone_id
   name    = "crm.transexpress.ovh"
@@ -146,4 +212,5 @@ resource "cloudflare_record" "cname-nextcloud" {
   type    = "CNAME"
   ttl     = 120
   proxied = false
-}
+} 
+*/
