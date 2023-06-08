@@ -74,4 +74,5 @@ module "cloudwatch_alarm" {
   source = "./modules/cloudwatch"
   instance-id   = each.value
   sns_topic-arn = module.sns.sns_topic-arn
+  instance-name = each.key
 }
