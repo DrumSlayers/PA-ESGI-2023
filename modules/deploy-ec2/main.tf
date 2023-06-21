@@ -140,6 +140,10 @@ resource "aws_instance" "vm" {
     "Name" = each.key
     "DNS" = each.value.dns_name
   }
+
+//  provisioner "local-exec" {
+//    command = "ansible-playbook -i \"${aws_instance.example.public_ip},\" -u ubuntu --private-key=~/.ssh/id_rsa playbook.yml --extra-vars '{\"variable1\":\"value1\", \"variable2\":\"value2\"}'"
+//  }
 }
 
 ## Dolibarr

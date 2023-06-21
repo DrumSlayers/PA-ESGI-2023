@@ -2,39 +2,23 @@
 - name: Install Dolibarr ERP on Ubuntu 22.04 VM with PostgreSQL and Nginx
   hosts: tag_Name_vm_dolibarr
   become: true
-  vars_prompt:
-    - name: scaleway_s3_access_key
-      prompt: Enter your Scaleway S3 Access Key
-      private: yes
-    - name: scaleway_s3_secret_key
-      prompt: Enter your Scaleway S3 Secret Key
-      private: yes
-    - name: scaleway_s3_bucket_name
-      prompt: Enter your Scaleway S3 Bucket Name
-      private: no
-    - name: dolibarr_database_name
-      prompt: Enter your Dolibarr database name
-      private: no
-    - name: dolibarr_database_user
-      prompt: Enter your Dolibarr database username
-      private: no
-    - name: dolibarr_database_password
-      prompt: Enter your Dolibarr database password
-      private: yes
-  
+  vars_files:
+    - dolibarr-secrets.yml
+
   tasks:
     - name: Update apt repository
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
 
     - name: Install required packages
-      apt:
+      ansible.builtin.apt:
         name:
           - nginx
-          - postgresql
-          - s3fs
+#          - postgresql
+#          - s3fs
           - php8.1-fpm
-          - php-pgsql
+          - php-mysqli
+          - php-mysql
           - php-gd
           - php-xml
           - php-zip
@@ -45,153 +29,168 @@
         state: present
 
     - name: Start and enable required services
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ item }}"
         state: started
-        enabled: yes
+        enabled: true
       loop:
         - nginx
-        - postgresql
+#        - postgresql
         - php8.1-fpm
-  
-    - name: Configure s3fs
-      block:
-        - name: Copy S3FS Creds Template
-          template:
-            src: ./dolibarr/s3fs.passwd.j2
-            dest: /etc/passwd-s3fs
-            mode: 0600
-        
-        - name: Ensure /mnt/s3 and MySQL datadir paths exist
-          ansible.builtin.file:
-            path: "/mnt/s3"
-            state: directory
 
-        - name: Mount S3 Bucket to /srv/s3
-          mount:
-            path: /srv/s3
-            src: "s3fs#{{ scaleway_s3_bucket_name }}"
-            fstype: fuse
-            state: mounted
-            opts: "allow_other,use_path_request_style,url=https://s3.fr-par.scw.cloud,allow_other"
-            passno: 0
-            dump: 0
-      vars:
-        s3fs_credentials:
-          access_key: "{{ scaleway_s3_access_key }}"
-          secret_key: "{{ scaleway_s3_secret_key }}"
+    # - name: Configure s3fs
+    #   block:
+    #     - name: Copy S3FS Creds Template
+    #       template:
+    #         src: ./dolibarr/s3fs.passwd.j2
+    #         dest: /etc/passwd-s3fs
+    #         mode: 0600
+
+    #     - name: Ensure /mnt/s3 and MySQL datadir paths exist
+    #       ansible.builtin.file:
+    #         path: "/mnt/s3"
+    #         state: directory
+
+    #     - name: Mount S3 Bucket to /srv/s3
+    #       mount:
+    #         path: /srv/s3
+    #         src: "s3fs#{{ scaleway_s3_bucket_name }}"
+    #         fstype: fuse
+    #         state: mounted
+    #         opts: "allow_other,use_path_request_style,url=https://s3.fr-par.scw.cloud,allow_other"
+    #         passno: 0
+    #         dump: 0
+    #   vars:
+    #     s3fs_credentials:
+    #       access_key: "{{ scaleway_s3_access_key }}"
+    #       secret_key: "{{ scaleway_s3_secret_key }}"
+
+    - name: Ensure Dolibarr directory exists
+      ansible.builtin.file:
+        path: /srv/dolibarr
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
 
     - name: Install Dolibarr
-      unarchive:
+      ansible.builtin.unarchive:
         src: https://github.com/Dolibarr/dolibarr/archive/refs/tags/17.0.2.tar.gz
         dest: /srv/dolibarr
-        remote_src: yes
+        creates: /srv/dolibarr/dolibarr-17.0.2
+        remote_src: true
         owner: www-data
         group: www-data
 
-    - name: Deploy Dolibarr configuration
-      template:
-        src: ./dolibarr/conf.php.j2
-        dest: /srv/dolibarr/dolibarr-17.0.2/htdocs/conf/conf.php
+    - name: Deploy Dolibarr configuration / forced install script
+      ansible.builtin.template:
+#        src: ./dolibarr/conf.php.j2
+#        dest: /srv/dolibarr/dolibarr-17.0.2/htdocs/conf/conf.php
+        src: ./dolibarr/install.forced.php.j2
+        dest: /srv/dolibarr/dolibarr-17.0.2/htdocs/install.forced.php
+        owner: www-data
+        group: www-data
+        mode: '0644'
 
     - name: Configure Nginx for Dolibarr
       block:
         - name: Install Nginx configuration file
-          template:
-            src: ./dolibarr/dolibarr_nginx.conf.j2
+          ansible.builtin.template:
+            src: ./dolibarr/nginx_dolibarr.conf.j2
             dest: /etc/nginx/sites-available/dolibarr
+            mode: '0644'
         - name: Enable Dolibarr Nginx site
-          file:
+          ansible.builtin.file:
             src: /etc/nginx/sites-available/dolibarr
             dest: /etc/nginx/sites-enabled/dolibarr
             state: link
         - name: Remove default Nginx site
-          file:
+          ansible.builtin.file:
             path: /etc/nginx/sites-enabled/default
             state: absent
         - name: Reload Nginx
-          systemd:
+          ansible.builtin.systemd:
             name: nginx
             state: reloaded
 
-    - name: Stop PostgreSQL service
-      systemd:
-        name: postgresql
-        state: stopped
+    # - name: Stop PostgreSQL service
+    #   systemd:
+    #     name: postgresql
+    #     state: stopped
 
-    - name: Create PostgreSQL data directory in /srv/db #/srv/s3
-      file:
-        path: /srv/db
-        state: directory
-        owner: postgres
-        group: postgres
-        mode: 0700
+    # - name: Create PostgreSQL data directory in /srv/db #/srv/s3
+    #   file:
+    #     path: /srv/db
+    #     state: directory
+    #     owner: postgres
+    #     group: postgres
+    #     mode: 0700
 
-    - name: Move PostgreSQL data to /srv/s3
-      command: mv "{{ item }}" /srv/db/
-      loop:
-        - /var/lib/postgresql/14/main
-      become_user: postgres
+    # - name: Move PostgreSQL data to /srv/s3
+    #   command: mv "{{ item }}" /srv/db/
+    #   loop:
+    #     - /var/lib/postgresql/14/main
+    #   become_user: postgres
 
-    - name: Configure pg_hba.conf to use md5 for local connections
-      block:
-        - name: Back up pg_hba.conf
-          command: cp /etc/postgresql/14/main/pg_hba.conf /etc/postgresql/14/main/pg_hba.conf.backup
+    # - name: Configure pg_hba.conf to use md5 for local connections
+    #   block:
+    #     - name: Back up pg_hba.conf
+    #       command: cp /etc/postgresql/14/main/pg_hba.conf /etc/postgresql/14/main/pg_hba.conf.backup
 
-        - name: Update pg_hba.conf for local connections to use md5 auth
-          lineinfile:
-            path: /etc/postgresql/14/main/pg_hba.conf
-            regexp: '^local\s+\w+\s+\w+\s+'
-            line: 'local   all             all                                md5'
+    #     - name: Update pg_hba.conf for local connections to use md5 auth
+    #       lineinfile:
+    #         path: /etc/postgresql/14/main/pg_hba.conf
+    #         regexp: '^local\s+\w+\s+\w+\s+'
+    #         line: 'local   all             all                                md5'
 
-        - name: Update pg_hba.conf for localhost TCP/IP connections to use md5 auth
-          lineinfile:
-            path: /etc/postgresql/14/main/pg_hba.conf
-            regexp: '^host\s+\w+\s+\w+\s+127\.0\.0\.*'
-            line: 'host   all             all             127.0.0.1/32          md5'
+    #     - name: Update pg_hba.conf for localhost TCP/IP connections to use md5 auth
+    #       lineinfile:
+    #         path: /etc/postgresql/14/main/pg_hba.conf
+    #         regexp: '^host\s+\w+\s+\w+\s+127\.0\.0\.*'
+    #         line: 'host   all             all             127.0.0.1/32          md5'
 
-        - name: Update pg_hba.conf for IPv6 localhost connections to use md5 auth
-          lineinfile:
-            path: /etc/postgresql/14/main/pg_hba.conf
-            regexp: '^host\s+\w+\s+\w+\s+::1/'
-            line: 'host   all             all             ::1/128               md5'
+    #     - name: Update pg_hba.conf for IPv6 localhost connections to use md5 auth
+    #       lineinfile:
+    #         path: /etc/postgresql/14/main/pg_hba.conf
+    #         regexp: '^host\s+\w+\s+\w+\s+::1/'
+    #         line: 'host   all             all             ::1/128               md5'
 
-        - name: Restart PostgreSQL
-          systemd:
-            name: postgresql
-            state: restarted
+    #     - name: Restart PostgreSQL
+    #       systemd:
+    #         name: postgresql
+    #         state: restarted
 
-    - name: Update PostgreSQL data directory configuration
-      lineinfile:
-        path: /etc/postgresql/14/main/postgresql.conf
-        regexp: '^data_directory ='
-        line: 'data_directory = '/srv/db/main/''
-      notify: Restart PostgreSQL
+    # - name: Update PostgreSQL data directory configuration
+    #   lineinfile:
+    #     path: /etc/postgresql/14/main/postgresql.conf
+    #     regexp: '^data_directory ='
+    #     line: 'data_directory = '/srv/db/main/''
+    #   notify: Restart PostgreSQL
 
-    - name: Create Dolibarr database user
-      become: yes
-      become_user: postgres
-      postgresql_user:
-        name: "dolibarrowner"
-        password: "{{ dolibarr_database_password }}"
-        role_attr_flags: 
-          - CREATEDB
-          - CREATEROLE
-        state: present
+    # - name: Create Dolibarr database user
+    #   become: yes
+    #   become_user: postgres
+    #   postgresql_user:
+    #     name: "dolibarrowner"
+    #     password: "{{ dolibarr_database_password }}"
+    #     role_attr_flags:
+    #       - CREATEDB
+    #       - CREATEROLE
+    #     state: present
 
-    - name: Create Dolibarr database
-      become: yes
-      become_user: postgres
-      postgresql_db:
-        name: "{{ dolibarr_database_name }}"
-        encoding: 'UTF-8'
-        lc_collate: 'en_US.UTF-8'
-        lc_ctype: 'en_US.UTF-8'
-        owner: "dolibarrowner"
-        state: present
+    # - name: Create Dolibarr database
+    #   become: yes
+    #   become_user: postgres
+    #   postgresql_db:
+    #     name: "{{ dolibarr_database_name }}"
+    #     encoding: 'UTF-8'
+    #     lc_collate: 'en_US.UTF-8'
+    #     lc_ctype: 'en_US.UTF-8'
+    #     owner: "dolibarrowner"
+    #     state: present
 
-  handlers:
-    - name: Restart PostgreSQL
-      systemd:
-        name: postgresql
-        state: restarted
+  # handlers:
+  #   - name: Restart PostgreSQL
+  #     systemd:
+  #       name: postgresql
+  #       state: restarted
