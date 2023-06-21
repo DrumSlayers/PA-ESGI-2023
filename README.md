@@ -5,7 +5,7 @@
     * [Topo](#topo)
 2. [Requirements](#requirements)
     * [Installation of requirements](#installation-of-requirements)
-3. [Déploiement](#dploiement)
+3. [Déploiement](#déploiement)
 4. [AWS Academy Credentials scrapper](#aws-academy-credentials-scrapper)
 5. [Usage](#usage)
 6. [Backend remote tfstate](#backend-remote-tfstate)
@@ -22,7 +22,7 @@
 ### Topo
 Nous sommes la société de prestation informatique RapidiCloud.
 
-Mandatés par un client, nous devons construire à neuf une infrastructure cloud-compatible pour répondre aux besoins de leur entreprise
+Mandatés par le client TransExpress, nous devons construire à neuf une infrastructure cloud-compatible pour répondre aux besoins de leur entreprise
 - Téléphonie
 - Mailing
 - Un site web dynamique avec beaucoup de traffic
@@ -30,18 +30,26 @@ Mandatés par un client, nous devons construire à neuf une infrastructure cloud
 Le client souhaite installer son infrastructure sur AWS, en infra-as-code le plus possible.
 Il souhaite également une documentation du projet complète et qualitative, afin qu'il puisse comprendre toute l'installation et réinstaller les travaux lui même au besoin.
 
+> Plus de détails dans la suite du sujet dans les documents fonctionnels.
+
+Pour des raisons de compréhension technique entre toutes les équipes intervenantes, le reste de cette documentation sera écrite en Anglais.
+
 ## Requirements
 - Terraform >=1.3.x
 - Ansible
     - aws_ec2 module
+
+For [AWS Academy Credentials scrapper](#aws-academy-credentials-scrapper) :
 - Python3
     - boto3
     - botocore
     - bs4
     - requests
-    - selenium (Looking to replacing it as it install everything X related, but it's working for now)
+    - selenium
     - dotenv
     - rich
+- X Server (for Selenium, althrough not really used, so you don't need a full desktop environment)
+- Chromium or Chrome
 
 ### Installation of requirements
 Debian :
@@ -67,9 +75,18 @@ terraform providers lock \
 ```
 
 ## Déploiement
+### Infrastructure Provisioning
 1. Fetch the AWS credentials using [AWS Academy Credentials scrapper](#aws-academy-credentials-scrapper) script
 2. `terraform init -backend-config=backend.conf`
 3. `terraform plan / deploy`
+
+### Infrastructure Configuration
+1. In `Ansible/` folder, copy each .example files to .yml files and edit the values with the required credentials (AWS & Remote database)
+2. Run Ansible Playbook to configure each instance you want to configure.
+   Playbooks are configured to match the right EC2 tags, so it automatically configure the targeted service.
+   For exemple: 
+   - `ansible-playbook -i ansible/aws_ec2.yml ansible/dolibarr-playbook.yml`
+   Will configure Dolibarr EC2 instance.
 
 ## AWS Academy Credentials scrapper
 The AWS Academy Learner Lab is giving new access tokens every 4 hours and at every lab start, so we need to scrap the token from the lab page automatically to prevent copying the values each time (very time consumming)
@@ -80,14 +97,6 @@ We are using Selenium with Chromium webdriver & BeautifulSoup python module for 
 ### Usage
 1. Copy `.env.exemple` to `.env` and edit the values with your AWS Academy credentials	
 2. Run ```python3 scrape_aws_credentials.py```
-
-## A faire
-Voir discord channel #tache-a-faire
-Au 29/04/23
-- Check IAM & droits dédiés
-- Book points/rdv avec Ettayeb
-- Trouver une solution pertinente pour les données permanente (backblaze ou minio sur un de nos serveurs hors AWS)
-
 
 ## Documentation
 - Ansible x Terraform x AWS 1 https://blog.stephane-robert.info/post/terraform-gitlab-aws-ansible/
