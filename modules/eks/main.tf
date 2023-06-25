@@ -87,7 +87,7 @@ resource "cloudflare_record" "eks_cname" {
   name    = "eks"
   value   = "${kubernetes_service.transexpress-website.load_balancer_ingress[0].hostname}" 
   type    = "CNAME"
-  ttl     = 120
+  ttl     = 1
   proxied = true
   depends_on = [
     aws_eks_node_group.eks-cluster,
