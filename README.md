@@ -87,6 +87,9 @@ terraform providers lock \
    For exemple: 
    - `ansible-playbook -i ansible/aws_ec2.yml ansible/dolibarr-playbook.yml`
    Will configure Dolibarr EC2 instance.
+3. In 'deploy-ec2/deploy-scripting/vm-nextcloud.tftpl' file, this running the deploy script for nextcloud.  
+   - `sudo docker compose up --build -d ` to build the docker image and run the container.
+   Nextcloud is accessible on https://host.transexpress.ovh/.      
 
 ## AWS Academy Credentials scrapper
 The AWS Academy Learner Lab is giving new access tokens every 4 hours and at every lab start, so we need to scrap the token from the lab page automatically to prevent copying the values each time (very time consumming)
