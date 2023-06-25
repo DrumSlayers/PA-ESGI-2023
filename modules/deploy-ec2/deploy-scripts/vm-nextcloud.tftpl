@@ -1,12 +1,20 @@
 #!/bin/bash
-# simple user
-echo $(whoami)  
+# print username
+echo $(whoami) 
+
+# Add SSH keys
 %{ for ssh-key in ssh_public_keys }
 echo ${ssh-key} >> /home/ubuntu/.ssh/authorized_keys
 %{ endfor ~}
+
+# Update packages
 sudo apt-get update -y
 sudo apt-get upgrade -y
+
+# Install dependencies
 sudo apt-get install ca-certificates curl gnupg -y
+
+# Install Docker and compose
 sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 sudo chmod a+r /etc/apt/keyrings/docker.gpg
@@ -16,3 +24,191 @@ echo \
 sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update -y
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+
+# Create acme.json and modify permissions
+touch /home/ubuntu/acme.json
+chmod 600 /home/ubuntu/acme.json
+
+# Create docker-compose.yml
+touch /home/ubuntu/docker-compose.yml
+cat > /home/ubuntu/docker-compose.yml <<HEL
+version: '3.7'
+
+services:
+  redis:
+    image: redis:alpine
+    restart: always
+    networks:
+      - traefik-public
+
+  app:
+    build: ./nextcloud
+    depends_on:
+      - traefik
+      - redis
+    volumes:
+      - nextcloud:/var/www/html
+    restart: always
+    environment:
+      - MYSQL_HOST=${mysql_host}
+      - MYSQL_DATABASE=${mysql_database}
+      - MYSQL_USER=${mysql_user}
+      - MYSQL_PASSWORD=${mysql_password}
+      - REDIS_HOST=${redis_host}
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nextcloud.entrypoints=web,websecure"
+      - "traefik.http.routers.nextcloud.rule=Host(\`${trusted_domain}\`)"
+      - "traefik.http.routers.nextcloud.tls.certresolver=myresolver"
+      - "traefik.http.routers.nextcloud.middlewares=nextcloud_redirectregex"
+      - "traefik.http.middlewares.secHeaders.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.secHeaders.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.secHeaders.headers.stsPreload=true"
+      - "traefik.http.routers.nextcloud.middlewares=secHeaders"
+  traefik:
+    image: "traefik:v2.5"
+    container_name: "traefik"
+    networks:
+      traefik-public:
+        ipv4_address: 172.19.0.254
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/ubuntu/acme.json:/acme.json
+    command:
+      - "--log.level=DEBUG"
+      - "--api=true"
+      - "--api.dashboard=true"
+      - "--global.sendAnonymousUsage=false"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=${acme_email}"
+      - "--certificatesresolvers.myresolver.acme.storage=${acme_storage}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.http-catchall.rule=hostregexp(\`{host:.+}\`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.nextcloud_redirectregex.redirectregex.permanent=true"
+      - "traefik.http.middlewares.nextcloud_redirectregex.redirectregex.regex=https://(.*)/.well-known/(?:card|cal)dav"
+      - "traefik.http.middlewares.nextcloud_redirectregex.redirectregex.replacement=https://$\$1/remote.php/dav"
+
+networks:
+  traefik-public:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: "172.19.0.0/16"
+
+volumes:
+  nextcloud: 
+HEL
+
+# Create nextcloud folder
+mkdir -p /home/ubuntu/nextcloud
+touch /home/ubuntu/nextcloud/Dockerfile
+cat > /home/ubuntu/nextcloud/Dockerfile <<HEL
+FROM nextcloud:26.0.1
+
+# Adjust PHP settings to increase timeout
+RUN echo 'max_execution_time=300' >> /usr/local/etc/php/php.ini
+RUN echo 'max_input_time=300' >> /usr/local/etc/php/php.ini
+
+# Copy the config file
+COPY config.php /var/www/html/config/config.php
+
+# Fix permissions and indicate that installation is allowed
+RUN mkdir -p /var/www/html/data && \
+    chown -R www-data:www-data /var/www/html/data && \
+    chmod 750 /var/www/html/data && \
+    chown -R www-data:www-data /var/www/html/config && \
+    chmod -R 750 /var/www/html/config && \
+    touch /var/www/html/config/CAN_INSTALL
+
+HEL
+
+# Create config.php
+touch /home/ubuntu/nextcloud/config.php
+cat > /home/ubuntu/nextcloud/config.php <<EOF
+<?php
+\$CONFIG = array (
+  'htaccess.RewriteBase' => '/',
+  'memcache.local' => '\\OC\\Memcache\\APCu',
+  'apps_paths' => 
+  array (
+    0 => 
+    array (
+      'path' => '/var/www/html/apps',
+      'url' => '/apps',
+      'writable' => false,
+    ),
+    1 => 
+    array (
+      'path' => '/var/www/html/custom_apps',
+      'url' => '/custom_apps',
+      'writable' => true,
+    ),
+  ),
+  'memcache.distributed' => '\\OC\\Memcache\\Redis',
+  'memcache.locking' => '\\OC\\Memcache\\Redis',
+  'redis' => 
+  array (
+    'host' => '${redis_host}',
+    'password' => '${redis_password}',
+    'port' => '${redis_port}',
+  ),
+  'instanceid' => 'ochb4efjdr04',
+  'trusted_domains' => 
+  array (
+    0 => 'localhost',
+    1 => '${trusted_domain}',
+  ),
+  'mysql' => 
+  array (
+    'dbname' => '${mysql_database}',
+    'dbhost' => '${mysql_host}',
+    'dbuser' => '${mysql_user}',
+    'dbpassword' => '${mysql_password}',
+  ),
+  'trusted_proxies' => 
+  array (
+    0 => '${trusted_proxy}',
+  ),
+  'objectstore' => array(
+      'class' => '\\OC\\Files\\ObjectStore\\S3',
+      'arguments' => array(
+          'bucket' => '${s3_bucket}',
+          'autocreate' => true,
+          'key' => '${s3_key}',
+          'secret' => '${s3_secret}',
+          'hostname' => '${s3_hostname}',
+          'port' => '${s3_port}',
+          'use_ssl' => true,
+          'region' => '${s3_region}',
+          'use_path_style'=> true,
+      ),
+  ),
+  'enable_previews' => false,
+  'allow_local_remote_servers' => true,
+  'loglevel' => 0,
+);
+EOF
+
+# Set permissions on config.php
+chmod 750 /home/ubuntu/nextcloud/config.php
+chown www-data:www-data /home/ubuntu/nextcloud/config.php
+
+# Build and start containers
+sudo docker compose -f /home/ubuntu/docker-compose.yml up --build -d

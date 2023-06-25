@@ -40,6 +40,24 @@ module "deploy-ec2" {
   scaleway_access_key      = var.scaleway_access_key
   scaleway_secret_key      = var.scaleway_secret_key
   cloudflare_zone_id       = var.cloudflare_zone_id
+  mysql_database           = var.mysql_database
+  mysql_user               = var.mysql_user
+  mysql_password           = var.mysql_password
+  mysql_host               = var.mysql_host
+  redis_host               = var.redis_host
+  acme_email               = var.acme_email
+  acme_storage             = var.acme_storage
+  redis_password           = var.redis_password
+  redis_port               = var.redis_port
+  s3_bucket                = var.s3_bucket
+  s3_region                = var.s3_region
+  s3_key                   = var.s3_key
+  s3_secret                = var.s3_secret
+  s3_hostname              = var.s3_hostname
+  s3_port                  = var.s3_port
+  trusted_domain           = var.trusted_domain
+  trusted_proxy            = var.trusted_proxy
+  
 }
 
 # declaration du module deploy-s3-scaleway

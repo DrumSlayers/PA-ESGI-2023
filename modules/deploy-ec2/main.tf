@@ -119,6 +119,25 @@ locals {
     scaleway_access_key = var.scaleway_access_key
     scaleway_secret_key = var.scaleway_secret_key
     ssh_public_keys     = var.ssh_public_keys
+    mysql_host          = var.mysql_host
+    mysql_user          = var.mysql_user
+    mysql_password      = var.mysql_password
+    mysql_database      = var.mysql_database
+    redis_host          = var.redis_host
+    redis_port          = var.redis_port
+    redis_password      = var.redis_password
+    acme_email          = var.acme_email
+    acme_storage        = var.acme_storage
+    s3_bucket           = var.s3_bucket
+    s3_region           = var.s3_region
+    s3_hostname         = var.s3_hostname
+    s3_key              = var.s3_key
+    s3_secret           = var.s3_secret
+    s3_port             = var.s3_port
+    trusted_domain      = var.trusted_domain
+    trusted_proxy       = var.trusted_proxy
+    
+
   }
 }
 

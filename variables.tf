@@ -246,3 +246,88 @@ variable "sns_phone_number" {
 variable "sns_email_address" {
   description = "Email address for Email Alerts"
 }
+
+variable "mysql_host" {
+  description = "MySQL Host"
+  type        = string
+}
+
+variable "mysql_database" {
+  description = "MySQL Database"
+  type        = string
+}
+
+variable "mysql_user" {
+  description = "MySQL User"
+  type        = string
+}
+
+variable "mysql_password" {
+  description = "MySQL Password"
+  type        = string
+}
+
+variable "redis_host" {
+  description = "Redis Host"
+  type        = string
+}
+
+variable "acme_email" {
+  description = "ACME Email"
+  type        = string
+}
+
+variable "acme_storage" {
+  description = "ACME Storage Path"
+  type        = string
+}
+
+variable "redis_password" {
+  description = "Redis Password"
+  type        = string
+}
+
+variable "redis_port" {
+  description = "Redis Port"
+  type        = number
+}
+
+variable "s3_bucket" {
+  description = "S3 Bucket Name"
+  type        = string
+}
+
+variable "s3_region" {
+  description = "S3 Bucket Region"
+  type        = string
+}
+
+variable "s3_key" {
+  description = "S3 Access Key"
+  type        = string
+}
+
+variable "s3_secret" {
+  description = "S3 Secret Key"
+  type        = string
+}
+
+variable "s3_hostname" {
+  description = "S3 Hostname"
+  type        = string
+}
+
+variable "s3_port" {
+  description = "S3 Port"
+  type        = number
+}
+
+variable "trusted_domain" {
+  description = "Trusted Domains"
+  type        = string
+}
+
+variable "trusted_proxy" {
+  description = "Trusted Proxies"
+  type        = string
+}
