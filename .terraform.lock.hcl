@@ -54,6 +54,45 @@ provider "registry.terraform.io/hashicorp/aws" {
   ]
 }
 
+provider "registry.terraform.io/hashicorp/helm" {
+  version     = "2.10.1"
+  constraints = "~> 2.10.1"
+  hashes = [
+    "h1:OFRsk+lMoRoNoJjJzRngH8hAq++Sb6LwrEKIjd7PeWA=",
+    "zh:0717312baed39fb0a00576297241b69b419880cad8771bf72dec97ebdc96b200",
+    "zh:0e0e287b4e8429a0700143c8159764502eba0b33b1d094bf0d4ef4d93c7802cb",
+    "zh:4f74605377dab4065aaad35a2c5fa6186558c6e2e57b9058bdc8a62cf91857b9",
+    "zh:505f4af4dedb7a4f8f45b4201900b8e16216bdc2a01cc84fe13cdbf937570e7e",
+    "zh:83f37fe692513c0ce307d487248765383e00f9a84ed95f993ce0d3efdf4204d3",
+    "zh:840e5a84e1b5744f0211f611a2c6890da58016a40aafd5971f12285164d4e29b",
+    "zh:8c03d8dee292fa0367b0511cf3e95b706e034f78025f5dff0388116e1798bf47",
+    "zh:937800d1860f6b3adbb20e65f11e5fcd940b21ce8bdb48198630426244691325",
+    "zh:c1853aa5cbbdd1d46f4b169e84c3482103f0e8575a9bb044dbde908e27348c5d",
+    "zh:c9b0f640590da20931c30818b0b0587aa517d5606cb6e8052e4e4bf38f97b54d",
+    "zh:f569b65999264a9416862bca5cd2a6177d94ccb0424f3a4ef424428912b9cb3c",
+    "zh:fe8bd4dd09dc7ca218959eda1ced9115408c2cdc9b4a76964bfa455f3bcadfd3",
+  ]
+}
+
+provider "registry.terraform.io/hashicorp/kubernetes" {
+  version     = "1.13.4"
+  constraints = "~> 1.9"
+  hashes = [
+    "h1:g7jKtArUeyDDevYvh+Xx2U6XIS90WgBCjfbWTrfbBgk=",
+    "zh:0658034b1b0e241f6d6fc8dac2073755dcbab8f82645c0a46cec052469c518b2",
+    "zh:11a08ffa9b86670711cb8f2754ac8034b0cdf3d9bad4f3c22695f749a892c630",
+    "zh:3e90e15a58f699f22bcbe27d3cf45064f9e1a2f1fb50992afc6ea55a59100d4c",
+    "zh:5e5a335655e40ceb4576af3790aead62646942972c206f49a3dc52275d925f11",
+    "zh:6bbf068c35380e75fbd7f5186c37175c6058bd6160d59957a023af3e4c9f43c5",
+    "zh:6bd839cce4ce786201b3d0d43b6ad80e3bf9642f74b1490b9cf72ca8d8c90575",
+    "zh:804ba2f1d03f315b071434fd7201eeb1e705fcb82f9a1dc4bec760e4231becfa",
+    "zh:957963a9f287589836a56be24bb9a172919f5a3f18098adb9f185f2a6699680b",
+    "zh:b099aea7f5213450f3b0d4e439aeb83aba965920b89474aa94f2bc0d6f698fe7",
+    "zh:b8d610a387f0df4b4c5c27b9319749d1bf60b01c69ea65d2d129c2a61afa0c7b",
+    "zh:cbf56221840b360befc00fe2336a9236d1ff0f32456453030ed6f58b49deb8df",
+  ]
+}
+
 provider "registry.terraform.io/scaleway/scaleway" {
   version     = "2.18.0"
   constraints = "2.18.0"
