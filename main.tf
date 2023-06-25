@@ -94,3 +94,17 @@ module "cloudwatch_alarm" {
   sns_topic-arn = module.sns.sns_topic-arn
   instance-name = each.key
 }
+
+# Cluster EKS
+module "eks" {
+  source = "./modules/eks"
+  aws_region = var.aws_region
+  aws_access_key_id = var.aws_access_key_id
+  aws_secret_access_key = var.aws_secret_access_key
+  aws_session_token = var.aws_session_token
+  cloudflare_api_token = var.cloudflare_api_token
+  cloudflare_zone_id = var.cloudflare_zone_id
+  project_eks = var.project_eks
+  vpc_cidr_eks = var.vpc_cidr_eks
+  subnet_cidr_bits_eks = var.subnet_cidr_bits_eks
+}
