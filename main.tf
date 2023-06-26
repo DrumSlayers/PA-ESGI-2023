@@ -81,6 +81,8 @@ module "sns" {
   source = "./modules/sns"
   sns_phone_number  = var.sns_phone_number
   sns_email_address = var.sns_email_address
+  sns_phone_number_guard = var.sns_phone_number_guard
+  sns_email_address_guard = var.sns_email_address_guard
 }
 
 # Cloudwatch monitoring
@@ -92,6 +94,7 @@ module "cloudwatch_alarm" {
   source = "./modules/cloudwatch"
   instance-id   = each.value
   sns_topic-arn = module.sns.sns_topic-arn
+  sns_topic-arn-guardduty = module.sns.sns_topic-arn-guardduty
   instance-name = each.key
 }
 
@@ -107,4 +110,8 @@ module "eks" {
   project_eks = var.project_eks
   vpc_cidr_eks = var.vpc_cidr_eks
   subnet_cidr_bits_eks = var.subnet_cidr_bits_eks
+}
+
+module "GuardDuty" {
+  source = "./modules/GuardDuty"
 }

@@ -9,3 +9,7 @@ variable "instance-name" {
 variable "sns_topic-arn" {
   description = "ARN of the SNS topic"
 }
+
+variable "sns_topic-arn-guardduty" {
+  description = "ARN of the SNS topic for GuardDuty alerts"
+}
