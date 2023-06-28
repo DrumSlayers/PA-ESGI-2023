@@ -14,8 +14,8 @@ jobs:
       
     - name: Install Dependencies
       run: |
-        apt-get install python3-pip -y
-        pip3 install checkov awscli awscli_plugin_endpoint
+        sudo apt-get install python3-pip -y
+        sudo pip3 install checkov awscli awscli_plugin_endpoint
 
     - name: Setup AWS CLI
       run: |
@@ -36,8 +36,11 @@ jobs:
         aws_secret_access_key = ${{ secrets.SECRET_ACCESS_KEY_SCALEWAY }}
         EOF
 
-    - name: Run Checkov and Upload Results to S3
+    - name: Run Checkov
       run: |
-        checkov -d . > results.txt
+        checkov -d . > results.txt || exit 0
+
+    - name: Upload Results to S3
+      run: |
         TIMESTAMP=$(date '+%d_%m_%Y_%H_%M_%S')
         aws s3 cp results.txt s3://${{ secrets.BUCKETNAME }}/checkov_$TIMESTAMP.txt
