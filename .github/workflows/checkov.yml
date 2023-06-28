@@ -1,0 +1,43 @@
+name: Checkov Scan and Upload to S3
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  checkov_scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+      
+    - name: Install Dependencies
+      run: |
+        apt-get install python3-pip -y
+        pip3 install checkov awscli awscli_plugin_endpoint
+
+    - name: Setup AWS CLI
+      run: |
+        mkdir $HOME/.aws
+        cat << EOF > $HOME/.aws/config
+        [plugins]
+        endpoint = awscli_plugin_endpoint
+        [default]
+        region = fr-par
+        s3 =
+          endpoint_url = https://s3.fr-par.scw.cloud
+        s3api =
+          endpoint_url = https://s3.fr-par.scw.cloud
+        EOF
+        cat << EOF > $HOME/.aws/credentials
+        [default]
+        aws_access_key_id = ${{ secrets.ACCESS_KEY_ID_SCALEWAY }}
+        aws_secret_access_key = ${{ secrets.SECRET_ACCESS_KEY_SCALEWAY }}
+        EOF
+
+    - name: Run Checkov and Upload Results to S3
+      run: |
+        checkov -d . > results.txt
+        TIMESTAMP=$(date '+%d_%m_%Y_%H_%M_%S')
+        aws s3 cp results.txt s3://${{ secrets.BUCKETNAME }}/checkov_$TIMESTAMP.txt
