@@ -1,39 +1,68 @@
 # == CREDENTIALS ==
 ## AWS
-aws_region               = "us-east-1" #us-east-1
+aws_region               = "us-east-1"
 aws_access_key_id = ""
 aws_secret_access_key = ""
 aws_session_token = ""
-## SCALEWAY
+## SCALEWAY 
 scaleway_access_key      = ""
 scaleway_secret_key      = ""
 scaleway_organization_id = ""
 scaleway_region          = ""
 scaleway_project_id = ""
+# == SETTINGS ==
+scaleway_bucket_initial_name = "bucket-pa-esgi"
+scaleway_bucket_name     = "pa-esgi-2023-b1"
+scaleway_num_buckets = 1
+
+# SSH Keys allowed in EC2s. First one will be added by default to all EC2s, other ones are added manually in the authorized_keys file
+ssh_public_keys = [
+    "ssh-rsa truc",
+    "ssh-rsa bidule",
+]
+
+#BUCKET + VPC
+bucket_name              = "pa-esgi-2023-b1"
+mount_point              = "/mnt/bucket"
+vpc_cidr_block           = "10.7.0.0/16"
+vpc_subnet_cidr_block    = "10.7.1.0/24"
+vpc_instance_tenancy     = "default"
+
+#SNS TOPIC
+sns_phone_number         = "+33xxxxxxxxx"
+sns_email_address        = ""
+
+#SNS TOPIC GuardDuty
+sns_phone_number_guard  = "+33xxxxxxxxx"
+sns_email_address_guard  = ""
+
 ## CLOUDFLARE
 cloudflare_api_token     =  ""
 cloudflare_zone_id       =  ""
 
-# == SETTINGS ==
-scaleway_bucket_initial_name    = "bucket-pa-esgi"
-scaleway_num_buckets            = 1
-scaleway_bucket_name            = "pa-esgi-2023-b1"
+## EC2 - Nextcloud
+mysql_host = ""
+mysql_database = "nextcloud"
+mysql_user     = "pa2023nextcloud"
+mysql_password = ""
+redis_host     = "redis"
+acme_email     = ""
+acme_storage   = "/acme.json"
 
-# SSH Keys allowed in EC2s. First one will be added by default to all EC2s, other ones are added manually in the authorized_keys file
-ssh_public_keys = [
-    "ssh-rsa AAAAAAAAA",
-    "ssh-rsa AAAAAAAAAZ",
-]
+## EC2 - config.php
+redis_password = ""
+redis_port = "6379"
+s3_bucket = "nextcloud-app-staging"
+s3_key = ""
+s3_secret = ""
+s3_hostname = "s3.fr-par.scw.cloud"
+s3_port = "443"
+s3_region = "fr-par"
+trusted_domain = "hosting.transexpress.ovh"
+trusted_proxy = "172.19.0.254"
 
-bucket_name              = "pa-esgi-2023-b1"
-mount_point              = "/mnt/bucket"
-vpc_cidr_block           = ""
-vpc_subnet_cidr_block    = ""
-vpc_instance_tenancy     = "default"
 
-sns_phone_number         = "+33xxxxxxxxx"
-sns_email_address        = "xx@xx.fr"
-
+## INFORMATION
 ec2-config = {
   "vm-dolibarr" = {
       ports  = [
@@ -71,16 +100,28 @@ ec2-config = {
         to = 80
         source="0.0.0.0/0"
       },
+      {
+        from = 4733
+        to = 4733
+        source="0.0.0.0/0"
+      },
         {
         from = 22
         to = 22
         source="0.0.0.0/0"
       }
+      
     ],
     ami_id                  = "ami-053b0d53c279acc90",
     instance_type           = "t2.large",
     volume_size             = 30,
     volume_type             = "gp2",
-    dns_name                = "cloud.transexpress.ovh",
+    dns_name                = "hosting.transexpress.ovh",
   }
 } 
+
+## EKS
+
+project_eks = "TransexpressWebsite"
+vpc_cidr_eks         = "10.0.0.0/16"
+subnet_cidr_bits_eks = 8
