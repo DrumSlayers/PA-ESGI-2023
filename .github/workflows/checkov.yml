@@ -42,5 +42,5 @@ jobs:
 
     - name: Upload Results to S3
       run: |
-        TIMESTAMP=$(date '+%d_%m_%Y_%H_%M_%S')
+        TIMESTAMP=$(TZ=":Europe/Paris" date '+%d_%m_%Y_%H_%M_%S')
         aws s3 cp results.txt s3://${{ secrets.BUCKETNAME }}/checkov_$TIMESTAMP.txt
