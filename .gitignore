@@ -35,8 +35,9 @@ override.tf.json
 .env
 geckodriver.log
 
-# Ansible AWS Inv
+# Ansible secret/vars files
 ansible/aws_ec2.yml
+ansible/dolibarr-secrets.yml
 
 # Backend remote state credentials
 backend.conf
