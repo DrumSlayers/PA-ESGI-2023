@@ -97,46 +97,5 @@ resource "cloudflare_record" "eks_cname" {
   ]
 }
 
-resource "github_actions_secret" "kubeconfig_secret" {
-  repository       = "TransExpress-website"
-  secret_name      = "KUBE_CONFIG"
-  plaintext_value  = base64encode(yamlencode({
-    apiVersion = "v1"
-    clusters = [{
-      cluster = {
-        server    = data.aws_eks_cluster.cluster.endpoint
-        certificate-authority-data = data.aws_eks_cluster.cluster.certificate_authority[0].data
-      }
-      name = "kubernetes"
-    }]
-    contexts = [{
-      context = {
-        cluster = "kubernetes"
-        user    = "aws"
-      }
-      name = "aws"
-    }]
-    current-context = "aws"
-    kind            = "Config"
-    preferences = {}
-    users = [{
-      name = "aws"
-      user = {
-        exec = {
-          apiVersion = "client.authentication.k8s.io/v1alpha1"
-          args       = ["eks", "get-token", "--cluster-name", aws_eks_cluster.eks-cluster.name]
-          command    = "aws"
-        }
-      }
-    }]
-  }))
-  depends_on = [
-    aws_eks_node_group.eks-cluster,
-    aws_eks_node_group.eks-cluster,
-    helm_release.cluster_autoscaler,
-    kubernetes_service.transexpress-website
-  ]
-}
-
 
 
