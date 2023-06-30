@@ -24,7 +24,7 @@ resource "github_actions_secret" "kubeconfig_secret" {
       name = "aws"
       user = {
         exec = {
-          apiVersion = "client.authentication.k8s.io/v1alpha1"
+          apiVersion = "client.authentication.k8s.io/v1beta1"
           args       = ["eks", "get-token", "--cluster-name", aws_eks_cluster.eks-cluster.name]
           command    = "aws"
         }
