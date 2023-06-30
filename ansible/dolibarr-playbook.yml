@@ -135,15 +135,16 @@
           changed_when: command_output.rc != 0
         - name: Generate Let's Encrypt certificate for domain
           ansible.builtin.command:
-            cmd: '{{ acme_install_dir }}/acme.sh --issue --nginx -d {{ domain_name }} --server letsencrypt --staging'
+            cmd: '{{ acme_install_dir }}/acme.sh --issue --nginx -d {{ domain_name }} --server letsencrypt'
             chdir: '{{ acme_install_dir }}'
           register: command_output
           changed_when: command_output.rc != 0
+          ignore_errors: true
         - name: Install SSL certificate
           ansible.builtin.command:
             cmd: >
-                  '{{ acme_install_dir }}/acme.sh --install-cert -d {{ domain_name }} --key-file /etc/nginx/ssl/{{ domain_name }}.key
-                  --fullchain-file /etc/nginx/ssl/{{ domain_name }}.cer --reloadcmd "service nginx force-reload"'
+                  {{ acme_install_dir }}/acme.sh --install-cert -d {{ domain_name }} --key-file /etc/nginx/ssl/{{ domain_name }}.key
+                  --fullchain-file /etc/nginx/ssl/{{ domain_name }}.cer --reloadcmd "service nginx force-reload"
             chdir: '{{ acme_install_dir }}'
           register: command_output
           changed_when: command_output.rc != 0
@@ -155,8 +156,7 @@
           ansible.builtin.replace:
             path: /etc/nginx/sites-enabled/dolibarr.conf
             regexp: 'dummy'
-            replace: '{{ item.fqdn }}'
-          loop: "{{ proxyservers }}"
+            replace: '{{ domain_name }}'
           notify: Restart Nginx
 
   handlers:
