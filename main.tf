@@ -110,6 +110,7 @@ module "eks" {
   project_eks = var.project_eks
   vpc_cidr_eks = var.vpc_cidr_eks
   subnet_cidr_bits_eks = var.subnet_cidr_bits_eks
+  github_token = var.github_token
 }
 
 module "GuardDuty" {

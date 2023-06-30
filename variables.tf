@@ -358,3 +358,7 @@ variable "subnet_cidr_bits_eks" {
   type        = number
   default     = 8
 }
+variable "github_token" {
+  description = "token identification github"
+  type        = string
+}

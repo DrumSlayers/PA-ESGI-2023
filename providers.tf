@@ -21,6 +21,10 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.10.1"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 5.0"
+    }
   }
 }
 
@@ -42,4 +46,8 @@ provider "scaleway" {
 
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
+}
+
+provider "github" {
+  token = var.github_token # or `GITHUB_TOKEN`
 }

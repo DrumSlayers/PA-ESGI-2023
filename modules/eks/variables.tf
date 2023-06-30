@@ -68,3 +68,7 @@ variable "cloudflare_api_token" {
   description = "API token for Cloudflare"
   type        = string
 }
+variable "github_token" {
+  description = "token identification github"
+  type        = string
+}
