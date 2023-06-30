@@ -61,7 +61,6 @@ s3_region = "fr-par"
 trusted_domain = "hosting.transexpress.ovh"
 trusted_proxy = "172.19.0.254"
 
-
 ## INFORMATION
 ec2-config = {
   "vm-dolibarr" = {
@@ -125,3 +124,4 @@ ec2-config = {
 project_eks = "TransexpressWebsite"
 vpc_cidr_eks         = "10.0.0.0/16"
 subnet_cidr_bits_eks = 8
+github_token = "github_pat_xxxxxxxxxxxxxxxxxxxxxx"

@@ -1,16 +1,23 @@
 # Projet Annuel 2023
 #### Table of contents
-1. [Introduction](#introduction)
-    * [Membres du projet](#membres-du-projet)
-    * [Topo](#topo)
-2. [Requirements](#requirements)
-    * [Installation of requirements](#installation-of-requirements)
-3. [Déploiement](#déploiement)
-4. [AWS Academy Credentials scrapper](#aws-academy-credentials-scrapper)
-5. [Usage](#usage)
-6. [Backend remote tfstate](#backend-remote-tfstate)
-7. [A faire](#a-faire)
-8. [Documentation](#documentation)
+- [Projet Annuel 2023](#projet-annuel-2023)
+      - [Table of contents](#table-of-contents)
+  - [Introduction](#introduction)
+    - [Membres du projet](#membres-du-projet)
+    - [Topo](#topo)
+  - [Requirements](#requirements)
+    - [Installation of requirements](#installation-of-requirements)
+      - [Terraform](#terraform)
+        - [Backend remote tfstate](#backend-remote-tfstate)
+        - [Multiple platform lock dependencies](#multiple-platform-lock-dependencies)
+  - [Déploiement](#déploiement)
+    - [Infrastructure Provisioning](#infrastructure-provisioning)
+    - [Infrastructure Configuration](#infrastructure-configuration)
+  - [AWS Academy Credentials scrapper](#aws-academy-credentials-scrapper)
+    - [Usage](#usage)
+  - [Documentation \& explainations](#documentation--explainations)
+    - [For each module](#for-each-module)
+    - [References](#references)
 
 ## Introduction
 ### Membres du projet
@@ -77,11 +84,12 @@ terraform providers lock \
 ## Déploiement
 ### Infrastructure Provisioning
 1. Fetch the AWS credentials using [AWS Academy Credentials scrapper](#aws-academy-credentials-scrapper) script
-2. `terraform init -backend-config=backend.conf`
-3. `terraform plan / deploy`
+2. Copy `terraform.tfvars.exemple` to `terraform.tfvars` and edit the values with your AWS Academy credentials
+3. Use `terraform plan` to preview changes
+4. Use `terraform apply` to apply changes
 
 ### Infrastructure Configuration
-1. In `Ansible/` folder, copy each .example files to .yml files and edit the values with the required credentials (AWS & Remote database)
+1. In `Ansible/` folder, copy each .example files to .yml files and edit the values with the required credentials (AWS, Remote database and various services configuration)
 2. Run Ansible Playbook to configure each instance you want to configure.
    Playbooks are configured to match the right EC2 tags, so it automatically configure the targeted service.
    For exemple: 
@@ -101,6 +109,11 @@ We are using Selenium with Chromium webdriver & BeautifulSoup python module for 
 1. Copy `.env.exemple` to `.env` and edit the values with your AWS Academy credentials	
 2. Run ```python3 scrape_aws_credentials.py```
 
-## Documentation
+## Documentation & explainations
+### For each module
+You will find each module documentation in the /docs folder.
+Direct links :
+
+### References
 - Ansible x Terraform x AWS 1 https://blog.stephane-robert.info/post/terraform-gitlab-aws-ansible/
 - Ansible x Terraform x AWS 2 https://dev.to/mariehposa/how-to-deploy-an-application-to-aws-ec2-instance-using-terraform-and-ansible-3e78

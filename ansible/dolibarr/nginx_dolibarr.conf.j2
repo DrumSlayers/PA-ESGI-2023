@@ -28,6 +28,8 @@ server {
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
         fastcgi_pass unix:/run/php/php8.1-fpm.sock;
+        fastcgi_read_timeout 600; 
+        # 10 minutes, without it, dolibarr install will timeout 
     }
 
     location ~ /\.ht {

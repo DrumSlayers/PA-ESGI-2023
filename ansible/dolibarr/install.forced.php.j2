@@ -25,7 +25,7 @@ $force_install_noedit = 2;
 $force_install_message = 'Welcome to your Dolibarr install';
 
 /** @var string	$force_install_main_data_root 		Data root absolute path (documents folder) */
-$force_install_main_data_root = null;
+$force_install_main_data_root = '{{ dolibarr_install_dir }}/dolibarr-17.0.2/htdocs';
 
 /** @var boolean	$force_install_mainforcehttps	Force HTTPS */
 $force_install_mainforcehttps = true;
@@ -71,4 +71,4 @@ $force_install_dolibarrlogin = 'admin';
 $force_install_lockinstall = true;
 
 /** @var string $force_install_module				Enable module(s) (Comma separated class names list) */
-$force_install_module = 'modSociete,modFournisseur,modFacture';
+$force_install_module = 'modSociete'; //,modFournisseur,modFacture
