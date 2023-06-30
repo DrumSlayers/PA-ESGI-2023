@@ -20,7 +20,7 @@ resource "scaleway_object_bucket" "main" {
     key = "bucket S3 - Projet"
   }
 }
-#create me a output that show the bucket name for each bucket created
+
 output "bucket_names" {
   value = scaleway_object_bucket.main
 }
