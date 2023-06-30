@@ -1,5 +1,5 @@
 ---
-- name: Install Dolibarr ERP on Ubuntu 22.04 VM with PostgreSQL and Nginx
+- name: Install Dolibarr ERP on Ubuntu 22.04 VM with Nginx and acme.sh for SSL
   hosts: tag_Name_vm_dolibarr
   become: true
   vars_files:
@@ -14,8 +14,7 @@
       ansible.builtin.apt:
         name:
           - nginx
-#          - postgresql
-#          - s3fs
+          - socat
           - php8.1-fpm
           - php-mysqli
           - php-mysql
@@ -35,39 +34,11 @@
         enabled: true
       loop:
         - nginx
-#        - postgresql
         - php8.1-fpm
-
-    # - name: Configure s3fs
-    #   block:
-    #     - name: Copy S3FS Creds Template
-    #       template:
-    #         src: ./dolibarr/s3fs.passwd.j2
-    #         dest: /etc/passwd-s3fs
-    #         mode: 0600
-
-    #     - name: Ensure /mnt/s3 and MySQL datadir paths exist
-    #       ansible.builtin.file:
-    #         path: "/mnt/s3"
-    #         state: directory
-
-    #     - name: Mount S3 Bucket to /srv/s3
-    #       mount:
-    #         path: /srv/s3
-    #         src: "s3fs#{{ scaleway_s3_bucket_name }}"
-    #         fstype: fuse
-    #         state: mounted
-    #         opts: "allow_other,use_path_request_style,url=https://s3.fr-par.scw.cloud,allow_other"
-    #         passno: 0
-    #         dump: 0
-    #   vars:
-    #     s3fs_credentials:
-    #       access_key: "{{ scaleway_s3_access_key }}"
-    #       secret_key: "{{ scaleway_s3_secret_key }}"
 
     - name: Ensure Dolibarr directory exists
       ansible.builtin.file:
-        path: /srv/dolibarr
+        path: "{{ dolibarr_install_dir }}"
         state: directory
         owner: www-data
         group: www-data
@@ -76,18 +47,16 @@
     - name: Install Dolibarr
       ansible.builtin.unarchive:
         src: https://github.com/Dolibarr/dolibarr/archive/refs/tags/17.0.2.tar.gz
-        dest: /srv/dolibarr
-        creates: /srv/dolibarr/dolibarr-17.0.2
+        dest: "{{ dolibarr_install_dir }}"
+        creates: "{{ dolibarr_install_dir }}/dolibarr-17.0.2"
         remote_src: true
         owner: www-data
         group: www-data
 
     - name: Deploy Dolibarr configuration / forced install script
       ansible.builtin.template:
-#        src: ./dolibarr/conf.php.j2
-#        dest: /srv/dolibarr/dolibarr-17.0.2/htdocs/conf/conf.php
         src: ./dolibarr/install.forced.php.j2
-        dest: /srv/dolibarr/dolibarr-17.0.2/htdocs/install.forced.php
+        dest: "{{ dolibarr_install_dir }}/dolibarr-17.0.2/htdocs/install/install.forced.php"
         owner: www-data
         group: www-data
         mode: '0644'
@@ -97,100 +66,82 @@
         - name: Install Nginx configuration file
           ansible.builtin.template:
             src: ./dolibarr/nginx_dolibarr.conf.j2
-            dest: /etc/nginx/sites-available/dolibarr
+            dest: /etc/nginx/sites-available/dolibarr.conf
             mode: '0644'
         - name: Enable Dolibarr Nginx site
           ansible.builtin.file:
-            src: /etc/nginx/sites-available/dolibarr
-            dest: /etc/nginx/sites-enabled/dolibarr
+            src: /etc/nginx/sites-available/dolibarr.conf
+            dest: /etc/nginx/sites-enabled/dolibarr.conf
             state: link
         - name: Remove default Nginx site
           ansible.builtin.file:
             path: /etc/nginx/sites-enabled/default
             state: absent
-        - name: Reload Nginx
-          ansible.builtin.systemd:
-            name: nginx
-            state: reloaded
+        - name: Ensure SSL directory exist in /etc/nginx
+          ansible.builtin.file:
+            path: /etc/nginx/ssl
+            state: directory
+            owner: root
+            group: root
+            mode: '0755'
+        - name: Create dummy ssl certificate to have a valid nginx configuration
+          ansible.builtin.command: >
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/dummy.key
+             -out /etc/nginx/ssl/dummy.cer -subj "/C=FR/ST=France/L=Paris/O=transexpress/OU=sys/CN={{ domain_name }}"
+          args:
+            creates:
+              /etc/nginx/ssl/dummy.cer
+              /etc/nginx/ssl/dummy.key
+          notify: Restart Nginx
 
-    # - name: Stop PostgreSQL service
-    #   systemd:
-    #     name: postgresql
-    #     state: stopped
+    - name: Configure SSL cert with acme.sh for Nginx
+      block:
+        - name: Ensure acme.sh directory exists
+          ansible.builtin.file:
+            path: "{{ acme_install_dir }}"
+            state: directory
+            owner: root
+            group: root
+            mode: '0755'
+        - name: Install acme.sh
+          ansible.builtin.git:
+            repo: https://github.com/acmesh-official/acme.sh.git
+            dest: "{{ acme_install_dir }}"
+            version: master
+        - name: Initialize acme.sh
+          ansible.builtin.command:
+            cmd: '{{ acme_install_dir }}/acme.sh --install -m {{ acme_email }}'
+            chdir: '{{ acme_install_dir }}'
+          register: command_output
+          changed_when: command_output.rc != 0
+        - name: Generate Let's Encrypt certificate for domain
+          ansible.builtin.command:
+            cmd: '{{ acme_install_dir }}/acme.sh --issue --nginx -d {{ domain_name }} --server letsencrypt'
+            chdir: '{{ acme_install_dir }}'
+          register: command_output
+          changed_when: command_output.rc != 0
+        - name: Install SSL certificate
+          ansible.builtin.command:
+            cmd: >
+                  '{{ acme_install_dir }}/acme.sh --install-cert -d {{ domain_name }} --key-file /etc/nginx/ssl/{{ domain_name }}.key
+                  --fullchain-file /etc/nginx/ssl/{{ domain_name }}.cer --reloadcmd "service nginx force-reload"'
+            chdir: '{{ acme_install_dir }}'
+          register: command_output
+          changed_when: command_output.rc != 0
+          args:
+            creates:
+              /root/.acme.sh/{{ domain_name }}/{{ domain_name }}.key
+              /root/.acme.sh/{{ domain_name }}/{{ domain_name }}.cer
+        - name: Replace dummy cert in nginx conf with the new certificate
+          ansible.builtin.replace:
+            path: /etc/nginx/sites-enabled/dolibarr.conf
+            regexp: 'dummy'
+            replace: '{{ item.fqdn }}'
+          loop: "{{ proxyservers }}"
+          notify: Restart Nginx
 
-    # - name: Create PostgreSQL data directory in /srv/db #/srv/s3
-    #   file:
-    #     path: /srv/db
-    #     state: directory
-    #     owner: postgres
-    #     group: postgres
-    #     mode: 0700
-
-    # - name: Move PostgreSQL data to /srv/s3
-    #   command: mv "{{ item }}" /srv/db/
-    #   loop:
-    #     - /var/lib/postgresql/14/main
-    #   become_user: postgres
-
-    # - name: Configure pg_hba.conf to use md5 for local connections
-    #   block:
-    #     - name: Back up pg_hba.conf
-    #       command: cp /etc/postgresql/14/main/pg_hba.conf /etc/postgresql/14/main/pg_hba.conf.backup
-
-    #     - name: Update pg_hba.conf for local connections to use md5 auth
-    #       lineinfile:
-    #         path: /etc/postgresql/14/main/pg_hba.conf
-    #         regexp: '^local\s+\w+\s+\w+\s+'
-    #         line: 'local   all             all                                md5'
-
-    #     - name: Update pg_hba.conf for localhost TCP/IP connections to use md5 auth
-    #       lineinfile:
-    #         path: /etc/postgresql/14/main/pg_hba.conf
-    #         regexp: '^host\s+\w+\s+\w+\s+127\.0\.0\.*'
-    #         line: 'host   all             all             127.0.0.1/32          md5'
-
-    #     - name: Update pg_hba.conf for IPv6 localhost connections to use md5 auth
-    #       lineinfile:
-    #         path: /etc/postgresql/14/main/pg_hba.conf
-    #         regexp: '^host\s+\w+\s+\w+\s+::1/'
-    #         line: 'host   all             all             ::1/128               md5'
-
-    #     - name: Restart PostgreSQL
-    #       systemd:
-    #         name: postgresql
-    #         state: restarted
-
-    # - name: Update PostgreSQL data directory configuration
-    #   lineinfile:
-    #     path: /etc/postgresql/14/main/postgresql.conf
-    #     regexp: '^data_directory ='
-    #     line: 'data_directory = '/srv/db/main/''
-    #   notify: Restart PostgreSQL
-
-    # - name: Create Dolibarr database user
-    #   become: yes
-    #   become_user: postgres
-    #   postgresql_user:
-    #     name: "dolibarrowner"
-    #     password: "{{ dolibarr_database_password }}"
-    #     role_attr_flags:
-    #       - CREATEDB
-    #       - CREATEROLE
-    #     state: present
-
-    # - name: Create Dolibarr database
-    #   become: yes
-    #   become_user: postgres
-    #   postgresql_db:
-    #     name: "{{ dolibarr_database_name }}"
-    #     encoding: 'UTF-8'
-    #     lc_collate: 'en_US.UTF-8'
-    #     lc_ctype: 'en_US.UTF-8'
-    #     owner: "dolibarrowner"
-    #     state: present
-
-  # handlers:
-  #   - name: Restart PostgreSQL
-  #     systemd:
-  #       name: postgresql
-  #       state: restarted
+  handlers:
+    - name: Restart Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
