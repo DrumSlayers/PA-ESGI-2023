@@ -130,6 +130,12 @@ resource "github_actions_secret" "kubeconfig_secret" {
       }
     }]
   }))
+  depends_on = [
+    aws_eks_node_group.eks-cluster,
+    aws_eks_node_group.eks-cluster,
+    helm_release.cluster_autoscaler,
+    kubernetes_service.transexpress-website
+  ]
 }
 
 

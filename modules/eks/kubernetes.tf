@@ -26,7 +26,7 @@ resource "kubernetes_deployment" "transexpress-website" {
       spec {
         container {
           name  = "transexpress-website"
-          image = "058322885590.dkr.ecr.us-east-1.amazonaws.com/transexpress-website"
+          image = "058322885590.dkr.ecr.us-east-1.amazonaws.com/transexpress-website:latest"
           image_pull_policy = "Always"
 
           port {
