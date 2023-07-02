@@ -238,3 +238,67 @@ variable "github_token" {
   description = "token identification github"
   type        = string
 }
+variable "scaling_config_desired_size" {
+  description = "Desired number of worker nodes"
+  type        = number
+}
+
+variable "scaling_config_max_size" {
+  description = "Maximum number of worker nodes"
+  type        = number
+}
+
+variable "scaling_config_min_size" {
+  description = "Minimum number of worker nodes"
+  type        = number
+}
+
+variable "ami_type_eks" {
+  description = "Amazon Machine Image (AMI) type for the EKS nodes"
+  type        = string
+}
+
+variable "disk_size_eks_node" {
+  description = "Disk size for the EKS nodes"
+  type        = number
+}
+
+variable "instance_types_eks_node" {
+  description = "Instance type for the EKS nodes"
+  type        = string
+}
+
+variable "cloudflare_dns_entry_name" {
+  description = "DNS entry name for the EKS cluster in Cloudflare"
+  type        = string
+}
+
+variable "github_repo_name" {
+  description = "Name of the GitHub repository"
+  type        = string
+}
+
+variable "kubeconfig_secret_name" {
+  description = "Name of the secret in GitHub for the kubeconfig"
+  type        = string
+}
+
+variable "aws_access_key_id_secret_name" {
+  description = "Name of the secret in GitHub for the AWS access key ID"
+  type        = string
+}
+
+variable "aws_region_secret_name" {
+  description = "Name of the secret in GitHub for the AWS region"
+  type        = string
+}
+
+variable "aws_secret_access_key_secret_name" {
+  description = "Name of the secret in GitHub for the AWS secret access key"
+  type        = string
+}
+
+variable "aws_session_token_secret_name" {
+  description = "Name of the secret in GitHub for the AWS session token"
+  type        = string
+}

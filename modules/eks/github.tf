@@ -1,6 +1,6 @@
 resource "github_actions_secret" "kubeconfig_secret" {
-  repository       = "TransExpress-website"
-  secret_name      = "KUBE_CONFIG"
+  repository       = var.github_repo_name
+  secret_name      = var.kubeconfig_secret_name
   plaintext_value  = base64encode(yamlencode({
     apiVersion = "v1"
     clusters = [{
@@ -40,25 +40,25 @@ resource "github_actions_secret" "kubeconfig_secret" {
 }
 
 resource "github_actions_secret" "AWS_ACCESS_KEY_ID_secret" {
-  repository       = "TransExpress-website"
-  secret_name      = "AWS_ACCESS_KEY_ID"
+  repository       = var.github_repo_name
+  secret_name      = var.aws_access_key_id_secret_name
   plaintext_value  = var.aws_access_key_id
 }
 
 resource "github_actions_secret" "AWS_REGION_secret" {
-  repository       = "TransExpress-website"
-  secret_name      = "AWS_REGION"
+  repository       = var.github_repo_name
+  secret_name      = var.aws_region_secret_name
   plaintext_value  = var.aws_region
 }
 
 resource "github_actions_secret" "AWS_SECRET_ACCESS_KEY_secret" {
-  repository       = "TransExpress-website"
-  secret_name      = "AWS_SECRET_ACCESS_KEY"
+  repository       = var.github_repo_name
+  secret_name      = var.aws_secret_access_key_secret_name
   plaintext_value  = var.aws_secret_access_key
 }
 
 resource "github_actions_secret" "AWS_SESSION_TOKEN_secret" {
-  repository       = "TransExpress-website"
-  secret_name      = "AWS_SESSION_TOKEN"
+  repository       = var.github_repo_name
+  secret_name      = var.aws_session_token_secret_name
   plaintext_value  = var.aws_session_token
 }

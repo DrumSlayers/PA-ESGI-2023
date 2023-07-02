@@ -88,6 +88,19 @@ module "eks" {
   vpc_cidr_eks = var.vpc_cidr_eks
   subnet_cidr_bits_eks = var.subnet_cidr_bits_eks
   github_token = var.github_token
+  scaling_config_desired_size = var.scaling_config_desired_size
+  scaling_config_max_size = var.scaling_config_max_size
+  scaling_config_min_size = var.scaling_config_min_size
+  ami_type_eks = var.ami_type_eks
+  disk_size_eks_node = var.disk_size_eks_node
+  instance_types_eks_node = var.instance_types_eks_node
+  cloudflare_dns_entry_name = var.cloudflare_dns_entry_name
+  github_repo_name = var.github_repo_name
+  kubeconfig_secret_name = var.kubeconfig_secret_name
+  aws_access_key_id_secret_name = var.aws_access_key_id_secret_name
+  aws_region_secret_name = var.aws_region_secret_name
+  aws_secret_access_key_secret_name = var.aws_secret_access_key_secret_name
+  aws_session_token_secret_name = var.aws_session_token_secret_name
 }
 
 module "GuardDuty" {
