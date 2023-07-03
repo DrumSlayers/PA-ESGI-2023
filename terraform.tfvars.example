@@ -119,9 +119,28 @@ ec2-config = {
   }
 } 
 
-## EKS
-
-project_eks = "TransexpressWebsite"
+## EKS - VPC
+project_eks = "TransexpressWebsite" // Name of EKS project
 vpc_cidr_eks         = "10.0.0.0/16"
 subnet_cidr_bits_eks = 8
-github_token = "github_pat_xxxxxxxxxxxxxxxxxxxxxx"
+
+## EKS - Cluster config
+scaling_config_desired_size = 3
+scaling_config_max_size = 8
+scaling_config_min_size = 3
+ami_type_eks = "AL2_x86_64"
+disk_size_eks_node = 20
+instance_types_eks_node = "t2.small"
+cloudflare_dns_entry_name = "eks"
+
+## EKS - Github
+github_token = "github_pat_xxxxxxxxxxx"
+github_repo_name = "my_repo"
+kubeconfig_secret_name = "KUBE_CONFIG"
+aws_access_key_id_secret_name = "AWS_ACCESS_KEY_ID"
+aws_region_secret_name = "AWS_REGION"
+aws_secret_access_key_secret_name = "AWS_SECRET_ACCESS_KEY"
+aws_session_token_secret_name = "AWS_SESSION_TOKEN"
+
+## EKS - GuardDuty
+aws_account_id = "0123456789"
