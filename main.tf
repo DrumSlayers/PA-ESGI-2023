@@ -101,6 +101,7 @@ module "eks" {
   aws_region_secret_name = var.aws_region_secret_name
   aws_secret_access_key_secret_name = var.aws_secret_access_key_secret_name
   aws_session_token_secret_name = var.aws_session_token_secret_name
+  aws_account_id = var.aws_account_id
 }
 
 module "GuardDuty" {

@@ -302,3 +302,8 @@ variable "aws_session_token_secret_name" {
   description = "Name of the secret in GitHub for the AWS session token"
   type        = string
 }
+
+variable "aws_account_id" {
+  description = "AWS account id"
+  type        = string
+}

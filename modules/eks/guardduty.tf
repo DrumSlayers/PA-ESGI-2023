@@ -74,7 +74,7 @@ data "aws_iam_policy_document" "eks_vpc_guardduty" {
       test     = "StringNotEquals"
       variable = "aws:PrincipalAccount"
 
-      values = ["058322885590"]
+      values = [var.aws_account_id]
     }
   }
 }
@@ -92,4 +92,8 @@ resource "aws_eks_addon" "guardduty" {
   tags = {
     "eks_addon" = "guardduty"
   }
+  depends_on = [
+    aws_eks_node_group.eks-cluster,
+    helm_release.cluster_autoscaler
+  ]
 }
