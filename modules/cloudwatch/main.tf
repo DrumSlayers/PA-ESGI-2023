@@ -4,8 +4,8 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
     evaluation_periods  = "1"
     metric_name         = "CPUUtilization"
     namespace           = "AWS/EC2"
-    period              = "180"
-    alarm_description   = "This metric triggers when CPU usage is above 80% for more than 3 minutes"
+    period              = "60" # 60 seconds for reactive alarm
+    alarm_description   = "This metric triggers when CPU usage is above 80% for more than 60 seconds (or 1 evaluation period)"
     alarm_actions       = [var.sns_topic-arn]
     dimensions = {
         InstanceId = var.instance-id

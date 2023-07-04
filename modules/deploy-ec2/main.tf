@@ -125,6 +125,7 @@ resource "aws_instance" "vm" {
     "Name" = each.key
     "DNS" = each.value.dns_name
   }
+  monitoring = true # Enabling CloudWatch detailled monitoring for project presentation purpose (1 minute interval instead of 5 minutes)
 }
 
 # EC2 DNS Entries
