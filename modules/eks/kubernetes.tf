@@ -10,7 +10,7 @@ resource "kubernetes_deployment" "transexpress-website" {
   }
 
   spec {
-    replicas = 2 // The number of desired replicas of this deployment.
+    replicas = var.kube_deploy_replicas // The number of desired replicas of this deployment.
 
     // The label selector for the pods to be managed by this deployment.
     selector {

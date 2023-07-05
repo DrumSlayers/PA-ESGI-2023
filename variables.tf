@@ -376,3 +376,8 @@ variable "kube_service_type" {
   description = "Type of the Kubernetes Service (e.g., LoadBalancer, NodePort, ClusterIP)"
   type        = string
 }
+
+variable "kube_deploy_replicas" {
+  description = "The number of desired replicas of this deployment"
+  type        = number
+}

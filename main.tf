@@ -115,6 +115,7 @@ module "eks" {
   kube_service_port = var.kube_service_port
   kube_service_target_port = var.kube_service_target_port
   kube_service_type = var.kube_service_type
+  kube_deploy_replicas = var.kube_deploy_replicas
 }
 
 module "GuardDuty" {
