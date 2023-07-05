@@ -34,6 +34,7 @@ module "deploy-ec2" {
   s3_port                  = var.s3_port
   trusted_domain           = var.trusted_domain
   trusted_proxy            = var.trusted_proxy
+  s3_bucket_name           = var.s3_bucket_name
   
 }
 

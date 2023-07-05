@@ -139,3 +139,20 @@ resource "cloudflare_record" "cname" {
   ttl     = 120
   proxied = false
 }
+
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id       = aws_vpc.vpc.id 
+  service_name = "com.amazonaws.${var.aws_region}.s3"
+}
+
+resource "aws_s3_bucket" "s3_bucket" {
+  bucket = var.s3_bucket_name
+}
+
+data "template_file" "s3_policy_file" {
+  template = file("${path.module}/policy.json")
+  vars = {
+    s3_arn = aws_s3_bucket.s3_bucket.arn
+    vpc_endpoint_id = aws_vpc_endpoint.s3.id
+  }
+}

@@ -165,3 +165,9 @@ variable "trusted_proxy" {
   description = "Trusted Proxies"
   type        = string
 }
+
+variable "s3_bucket_name" {
+  description = "S3 Bucket Name"
+  type        = string
+}
+  
