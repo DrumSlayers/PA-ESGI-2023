@@ -33,7 +33,7 @@ resource "helm_release" "cluster_autoscaler" {
 
   set {
     name  = "extraArgs.scale-down-unneeded-time"
-    value = "5m" // Time a node must be unused before being considered for deletion in minute
+    value = "1m" // Time a node must be unused before being considered for deletion in minute
   }
 
   set {
@@ -43,6 +43,7 @@ resource "helm_release" "cluster_autoscaler" {
 
   // The dependencies for the Helm release resource
   depends_on = [
+    aws_eks_cluster.eks-cluster,
     aws_eks_node_group.eks-cluster
   ]
 }

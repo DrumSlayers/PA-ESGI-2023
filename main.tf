@@ -101,7 +101,20 @@ module "eks" {
   aws_region_secret_name = var.aws_region_secret_name
   aws_secret_access_key_secret_name = var.aws_secret_access_key_secret_name
   aws_session_token_secret_name = var.aws_session_token_secret_name
-  aws_account_id = var.aws_account_id
+  kube_deploy_name = var.kube_deploy_name
+  kube_deploy_label = var.kube_deploy_label
+  kube_deploy_container_name = var.kube_deploy_container_name
+  kube_deploy_image = var.kube_deploy_image
+  kube_deploy_pull_policy = var.kube_deploy_pull_policy
+  kube_deploy_port = var.kube_deploy_port
+  kube_deploy_request_cpu = var.kube_deploy_request_cpu
+  kube_deploy_request_memory = var.kube_deploy_request_memory
+  kube_deploy_limits_cpu = var.kube_deploy_limits_cpu
+  kube_deploy_limits_memory = var.kube_deploy_limits_memory
+  kube_service_name = var.kube_service_name
+  kube_service_port = var.kube_service_port
+  kube_service_target_port = var.kube_service_target_port
+  kube_service_type = var.kube_service_type
 }
 
 module "GuardDuty" {

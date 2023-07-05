@@ -217,7 +217,7 @@ variable "trusted_proxy" {
 }
 
 
-## EKS
+## EKS - Cluster
 variable "project_eks" {
   description = "Name to be used on all the resources as identifier. e.g. Project name, Application name"
   type = string
@@ -234,10 +234,7 @@ variable "subnet_cidr_bits_eks" {
   type        = number
   default     = 8
 }
-variable "github_token" {
-  description = "token identification github"
-  type        = string
-}
+
 variable "scaling_config_desired_size" {
   description = "Desired number of worker nodes"
   type        = number
@@ -268,11 +265,17 @@ variable "instance_types_eks_node" {
   type        = string
 }
 
+## EKS - Cloudflare
 variable "cloudflare_dns_entry_name" {
   description = "DNS entry name for the EKS cluster in Cloudflare"
   type        = string
 }
 
+## EKS - Github
+variable "github_token" {
+  description = "Token identification for github actions"
+  type        = string
+}
 variable "github_repo_name" {
   description = "Name of the GitHub repository"
   type        = string
@@ -303,7 +306,73 @@ variable "aws_session_token_secret_name" {
   type        = string
 }
 
-variable "aws_account_id" {
-  description = "AWS account id"
+## EKS - Kubernetes
+variable "kube_deploy_name" {
+  description = "Name of the Kubernetes Deployment"
+  type        = string
+}
+
+variable "kube_deploy_label" {
+  description = "Label for the Kubernetes Deployment"
+  type        = string
+}
+
+variable "kube_deploy_container_name" {
+  description = "Name of the container in the Kubernetes Deployment"
+  type        = string
+}
+
+variable "kube_deploy_image" {
+  description = "Image to use for the container in the Kubernetes Deployment"
+  type        = string
+}
+
+variable "kube_deploy_pull_policy" {
+  description = "Image pull policy for the container in the Kubernetes Deployment"
+  type        = string
+}
+
+variable "kube_deploy_port" {
+  description = "Port for the container in the Kubernetes Deployment"
+  type        = number
+}
+
+variable "kube_deploy_request_cpu" {
+  description = "CPU request for the container in the Kubernetes Deployment"
+  type        = string
+}
+
+variable "kube_deploy_request_memory" {
+  description = "Memory request for the container in the Kubernetes Deployment"
+  type        = string
+}
+
+variable "kube_deploy_limits_cpu" {
+  description = "CPU limit for the container in the Kubernetes Deployment"
+  type        = string
+}
+
+variable "kube_deploy_limits_memory" {
+  description = "Memory limit for the container in the Kubernetes Deployment"
+  type        = string
+}
+
+variable "kube_service_name" {
+  description = "Name of the Kubernetes Service"
+  type        = string
+}
+
+variable "kube_service_port" {
+  description = "Port for the Kubernetes Service"
+  type        = number
+}
+
+variable "kube_service_target_port" {
+  description = "Target port for the Kubernetes Service"
+  type        = number
+}
+
+variable "kube_service_type" {
+  description = "Type of the Kubernetes Service (e.g., LoadBalancer, NodePort, ClusterIP)"
   type        = string
 }

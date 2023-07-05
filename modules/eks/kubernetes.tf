@@ -1,11 +1,11 @@
 // This resource block is used to create a Kubernetes deployment for the Transexpress website.
 resource "kubernetes_deployment" "transexpress-website" {
   metadata {
-    name = "transexpress-website-deployment" // The name of the Kubernetes deployment.
+    name = var.kube_deploy_name // The name of the Kubernetes deployment.
     
     // The labels to apply to the Kubernetes deployment.
     labels = {
-      app = "transexpress-website"
+      app = var.kube_deploy_label
     }
   }
 
@@ -15,7 +15,7 @@ resource "kubernetes_deployment" "transexpress-website" {
     // The label selector for the pods to be managed by this deployment.
     selector {
       match_labels = {
-        app = "transexpress-website"
+        app = var.kube_deploy_label
       }
     }
 
@@ -23,31 +23,31 @@ resource "kubernetes_deployment" "transexpress-website" {
       metadata {
         // The labels to apply to the pods created by this deployment.
         labels = {
-          app = "transexpress-website"
+          app = var.kube_deploy_label
         }
       }
 
       spec {
         container {
-          name  = "transexpress-website" // The name of the container within the pod.
-          image = "058322885590.dkr.ecr.us-east-1.amazonaws.com/transexpress-website:latest" // The image to be used for the container.
-          image_pull_policy = "Always" // The image pull policy for the container.
+          name  = var.kube_deploy_container_name // The name of the container within the pod.
+          image = var.kube_deploy_image // The image to be used for the container.
+          image_pull_policy = var.kube_deploy_pull_policy // The image pull policy for the container.
 
           port {
-            container_port = 80 // The port to expose on the container.
+            container_port = var.kube_deploy_port // The port to expose on the container.
           }
           
           resources {
             // The requested CPU and memory resources for the container.
             requests {
-              cpu    = "200m"
-              memory = "450Mi"
+              cpu    = var.kube_deploy_request_cpu
+              memory = var.kube_deploy_request_memory
             }
             
             // The limit on the CPU and memory resources for the container.
             limits {
-              cpu    = "500m"
-              memory = "512Mi"
+              cpu    = var.kube_deploy_limits_cpu
+              memory = var.kube_deploy_limits_memory
             }
           }
         }
@@ -65,18 +65,18 @@ resource "kubernetes_deployment" "transexpress-website" {
 // This resource block is used to create a Kubernetes service for the Transexpress website.
 resource "kubernetes_service" "transexpress-website" {
   metadata {
-    name = "transexpress-website-service" // The name of the Kubernetes service.
+    name = var.kube_service_name // The name of the Kubernetes service.
   }
   spec {
     // The selector for the pods that this service should manage.
     selector = {
-      app = "transexpress-website"
+      app = var.kube_deploy_label
     }
     port {
-      port        = 80 // The port that this service should expose.
-      target_port = 80 // The port on the target pods that this service should send traffic to.
+      port        = var.kube_service_port // The port that this service should expose.
+      target_port = var.kube_service_target_port // The port on the target pods that this service should send traffic to.
     }
-    type = "LoadBalancer" // The type of the service. "LoadBalancer" means that the service will be exposed to the internet.
+    type = var.kube_service_type // The type of the service. "LoadBalancer" means that the service will be exposed to the internet.
   }
 
   // The dependencies for the Kubernetes service resource.

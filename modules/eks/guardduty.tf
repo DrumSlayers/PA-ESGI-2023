@@ -43,6 +43,7 @@ resource "aws_vpc_security_group_ingress_rule" "eks_vpc_guardduty_ingress" {
   to_port     = 443
 }
 
+data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "eks_vpc_guardduty" {
   statement {
@@ -74,7 +75,7 @@ data "aws_iam_policy_document" "eks_vpc_guardduty" {
       test     = "StringNotEquals"
       variable = "aws:PrincipalAccount"
 
-      values = [var.aws_account_id]
+      values = [data.aws_caller_identity.current.account_id]
     }
   }
 }
