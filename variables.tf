@@ -386,3 +386,28 @@ variable "s3_bucket_name" {
   description = "Name of the S3 bucket"
   type        = string
 }
+
+variable "db_allocated_storage" {
+  description = "The allocated storage in gigabytes"
+  default     = 20
+}
+
+variable "db_username" {
+  description = "The name of master user for the RDS instance"
+  type        = string
+}
+
+variable "db_password" {
+  description = "Password for the master (root) user"
+  type        = string
+}
+
+variable "subnet_cidr_blocks" {
+  description = "CIDR blocks for the subnets"
+  type        = list(string)
+}
+
+variable "availability_zones" {
+  description = "Availability zones for the subnets"
+  type        = list(string)
+}

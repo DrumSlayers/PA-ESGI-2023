@@ -85,7 +85,7 @@ locals {
     scaleway_access_key = var.scaleway_access_key
     scaleway_secret_key = var.scaleway_secret_key
     ssh_public_keys     = var.ssh_public_keys
-    mysql_host          = var.mysql_host
+    mysql_host          = aws_db_instance.mysql.endpoint
     mysql_user          = var.mysql_user
     mysql_password      = var.mysql_password
     mysql_database      = var.mysql_database
@@ -155,4 +155,56 @@ data "template_file" "s3_policy_file" {
     s3_arn = aws_s3_bucket.s3_bucket.arn
     vpc_endpoint_id = aws_vpc_endpoint.s3.id
   }
+}
+
+# Security Group for RDS
+resource "aws_security_group" "rds_sg" {
+  name        = "rds_sg"
+  description = "Security Group for RDS"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    security_groups = [aws_security_group.ec2_sg["vm-nextcloud"].id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# RDS Instance
+resource "aws_db_instance" "mysql" {
+  allocated_storage    = var.db_allocated_storage
+  storage_type         = "gp2"
+  engine               = "mysql"
+  engine_version       = "8.0"
+  instance_class       = "db.t2.micro"
+  db_name              = "nextcloud"
+  username             = var.db_username
+  password             = var.db_password
+  parameter_group_name = "default.mysql8.0"
+  skip_final_snapshot  = true
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  db_subnet_group_name   = aws_db_subnet_group.default.name
+  deletion_protection    = false
+}
+
+# Create multiple subnets
+resource "aws_subnet" "subnet_db" {
+  count             = 2 # Create 2 subnets
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = var.subnet_cidr_blocks[count.index] # You should define cidr_blocks for each subnet
+  availability_zone = element(var.availability_zones, count.index) # You should define availability_zones for each subnet
+}
+
+# Create DB subnet group
+resource "aws_db_subnet_group" "default" {
+  name       = "main"
+  subnet_ids = aws_subnet.subnet_db[*].id
 }

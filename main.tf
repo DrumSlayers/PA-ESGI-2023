@@ -35,6 +35,11 @@ module "deploy-ec2" {
   trusted_domain           = var.trusted_domain
   trusted_proxy            = var.trusted_proxy
   s3_bucket_name           = var.s3_bucket_name
+  db_allocated_storage     = var.db_allocated_storage
+  db_username              = var.db_username
+  db_password              = var.db_password
+  subnet_cidr_blocks       = var.subnet_cidr_blocks
+  availability_zones       = var.availability_zones
   
 }
 
